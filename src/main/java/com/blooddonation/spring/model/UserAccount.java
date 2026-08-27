@@ -59,3 +59,4 @@ public class UserAccount {
     public void setPermissions(String permissions) { this.permissions = permissions; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }
+Commit at 2026-08-27T09:28:16
