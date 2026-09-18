@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('QA Records CRUD')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar('admin')}"></nav>
+<main class="main-wrapper">
+    <div th:replace="~{portal/_nav :: portalNav('qa')}"></div>
+    <div th:replace="~{layout :: alerts}"></div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px">
+        <div>
+            <h1>QA Records Management</h1>
+            <p style="color:var(--text-secondary);margin:0">Create, view, update, and remove blood unit quality records.</p>
+        </div>
+        <a th:href="@{/portal/qa}" class="btn btn-secondary">Back to QA Portal</a>
+    </div>
+
+    <section class="card">
+        <h2 class="card-title">Create New QA Record</h2>
+        <form th:action="@{/portal/qa/records}" method="post" th:object="${newUnit}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Blood Group *</label>
+                    <select class="form-control" th:field="*{bloodGroup}" required>
+                        <option value="">Select</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Component *</label>
+                    <select class="form-control" th:field="*{component}" required>
+                        <option value="Whole Blood">Whole Blood</option>
+                        <option value="Red Cells">Red Cells</option>
+                        <option value="Plasma">Plasma</option>
+                        <option value="Platelets">Platelets</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Branch *</label>
+                    <input class="form-control" th:field="*{branch}" required placeholder="Colombo Central">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Expiry Date *</label>
+                    <input class="form-control" type="datetime-local" th:field="*{expiresAt}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-control" th:field="*{status}">
+                        <option value="Pending Screening">Pending Screening</option>
+                        <option value="Approved - Available">Approved - Available</option>
+                        <option value="Rejected - Non-Compliant">Rejected - Non-Compliant</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Quality Notes</label>
+                <textarea class="form-control" rows="3" th:field="*{qualityNotes}" placeholder="QA remarks or notes"></textarea>
+            </div>
+            <button class="btn btn-primary" style="margin-top:12px">Create Record</button>
+        </form>
+    </section>
+
+    <section class="card" style="margin-top:24px">
+        <h2 class="card-title">QA Record List</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Unit ID</th>
+                        <th>Blood Group</th>
+                        <th>Component</th>
+                        <th>Branch</th>
+                        <th>Expiry</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                        <th style="text-align:right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="unit:${units}">
+                        <td th:text="${unit.id}">UID</td>
+                        <td th:text="${unit.bloodGroup}">A+</td>
+                        <td th:text="${unit.component}">Whole Blood</td>
+                        <td th:text="${unit.branch}">Branch</td>
+                        <td th:text="${#temporals.format(unit.expiresAt, 'dd MMM yyyy HH:mm')}">Expiry</td>
+                        <td th:text="${unit.status}">Status</td>
+                        <td th:text="${unit.qualityNotes != null ? unit.qualityNotes : '—'}">Notes</td>
+                        <td style="text-align:right">
+                            <div style="display:inline-flex;gap:8px;flex-wrap:wrap">
+                                <details class="qa-edit-details">
+                                    <summary class="btn btn-secondary btn-sm">Update</summary>
+                                    <form class="qa-edit-form" th:action="@{/portal/qa/records/{id}/update(id=${unit.id})}" method="post">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label class="form-label">Blood Group</label>
+                                                <select class="form-control" name="bloodGroup" required>
+                                                    <option value="A+" th:selected="${unit.bloodGroup == 'A+'}">A+</option>
+                                                    <option value="A-" th:selected="${unit.bloodGroup == 'A-'}">A-</option>
+                                                    <option value="B+" th:selected="${unit.bloodGroup == 'B+'}">B+</option>
+                                                    <option value="B-" th:selected="${unit.bloodGroup == 'B-'}">B-</option>
+                                                    <option value="AB+" th:selected="${unit.bloodGroup == 'AB+'}">AB+</option>
+                                                    <option value="AB-" th:selected="${unit.bloodGroup == 'AB-'}">AB-</option>
+                                                    <option value="O+" th:selected="${unit.bloodGroup == 'O+'}">O+</option>
+                                                    <option value="O-" th:selected="${unit.bloodGroup == 'O-'}">O-</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Component</label>
+                                                <select class="form-control" name="component" required>
+                                                    <option value="Whole Blood" th:selected="${unit.component == 'Whole Blood'}">Whole Blood</option>
+                                                    <option value="Red Cells" th:selected="${unit.component == 'Red Cells'}">Red Cells</option>
+                                                    <option value="Plasma" th:selected="${unit.component == 'Plasma'}">Plasma</option>
+                                                    <option value="Platelets" th:selected="${unit.component == 'Platelets'}">Platelets</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Branch</label>
+                                                <input class="form-control" name="branch" th:value="${unit.branch}" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label class="form-label">Expiry Date</label>
+                                                <input class="form-control" type="datetime-local" name="expiresAt"
+                                                       th:value="${#temporals.format(unit.expiresAt, 'yyyy-MM-dd''T''HH:mm')}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Status</label>
+                                                <select class="form-control" name="status" required>
+                                                    <option value="Pending Screening" th:selected="${unit.status == 'Pending Screening'}">Pending Screening</option>
+                                                    <option value="Approved - Available" th:selected="${unit.status == 'Approved - Available'}">Approved - Available</option>
+                                                    <option value="Rejected - Non-Compliant" th:selected="${unit.status == 'Rejected - Non-Compliant'}">Rejected - Non-Compliant</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Quality Notes</label>
+                                            <textarea class="form-control" name="qualityNotes" rows="2" th:text="${unit.qualityNotes}"></textarea>
+                                        </div>
+                                        <button class="btn btn-primary btn-sm" type="submit">Save Update</button>
+                                    </form>
+                                </details>
+                                <form th:action="@{/portal/qa/records/{id}/delete(id=${unit.id})}" method="post" onsubmit="return confirm('Delete this QA record?');">
+                                    <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<style>
+    .qa-edit-details {
+        position: relative;
+        text-align: left;
+    }
+    .qa-edit-details summary {
+        cursor: pointer;
+        list-style: none;
+    }
+    .qa-edit-details summary::-webkit-details-marker {
+        display: none;
+    }
+    .qa-edit-form {
+        position: absolute;
+        z-index: 5;
+        right: 0;
+        top: calc(100% + 8px);
+        width: min(620px, 75vw);
+        padding: 18px;
+        background: var(--card-bg, #ffffff);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+    }
+    .qa-edit-form .form-row {
+        margin-bottom: 12px;
+    }
+    @media (max-width: 700px) {
+        .qa-edit-form {
+            position: fixed;
+            left: 5vw;
+            right: 5vw;
+            top: 15vh;
+            width: 90vw;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+    }
+</style>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

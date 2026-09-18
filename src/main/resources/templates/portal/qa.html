@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('QA Officer Portal')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar('admin')}"></nav>
+<main class="main-wrapper">
+    <div th:replace="~{portal/_nav :: portalNav('qa')}"></div>
+    <div th:replace="~{layout :: alerts}"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+        <div>
+            <h1>Quality Assurance Portal</h1>
+            <p style="color:var(--text-secondary);margin-bottom:0">UC-17 Log Screening Results · PBI-17 · PBI-18 Expiry Verification · PBI-19 Non-Compliance</p>
+        </div>
+        <a th:href="@{/portal/qa/records}" class="btn btn-primary">QA Records CRUD</a>
+    </div>
+
+    <section class="card" th:if="${userPermissions == null or userPermissions.contains('LOG_SCREENING')}">
+        <h2 class="card-title">Screening & Quality Verification</h2>
+        <form method="get" th:action="@{/portal/qa}" style="display:flex;gap:12px;margin-bottom:20px">
+            <select name="unitId"><option value="">Select blood unit</option>
+                <option th:each="u:${units}" th:value="${u.id}" th:selected="${selectedUnit != null and selectedUnit.id == u.id}"
+                        th:text="${#strings.substring(u.id,0,8) + '... | ' + u.bloodGroup + ' | ' + u.component + ' | ' + u.status}"></option>
+            </select><button class="btn btn-primary">Load Unit</button>
+        </form>
+
+        <div th:if="${selectedUnit != null}">
+            <div style="padding:16px;background:var(--bg-secondary);border-radius:10px;margin-bottom:20px">
+                <strong>Unit:</strong> <span th:text="${selectedUnit.id}"></span> |
+                <strong>Group:</strong> <span th:text="${selectedUnit.bloodGroup}"></span> |
+                <strong>Status:</strong> <span th:text="${selectedUnit.status}"></span> |
+                <strong>Expires:</strong> <span th:text="${#temporals.format(selectedUnit.expiresAt,'dd MMM yyyy')}"></span>
+            </div>
+            <form th:action="@{/portal/qa/screening}" method="post" th:if="${selectedUnit.status == 'Pending Screening'}">
+                <input type="hidden" name="unitId" th:value="${selectedUnit.id}">
+                <p style="font-weight:600;margin-bottom:12px">Enter screening test results (Non-Reactive = pass):</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:16px">
+                    <label><input type="checkbox" name="hiv" value="true"> HIV Non-Reactive</label>
+                    <label><input type="checkbox" name="hepB" value="true"> Hepatitis B Non-Reactive</label>
+                    <label><input type="checkbox" name="hepC" value="true"> Hepatitis C Non-Reactive</label>
+                    <label><input type="checkbox" name="syphilis" value="true"> Syphilis Non-Reactive</label>
+                    <label><input type="checkbox" name="malaria" value="true"> Malaria Non-Reactive</label>
+                </div>
+                <div class="form-group"><label>Cross-matching outcome notes</label><input name="notes" placeholder="Cross-match compatible / notes"></div>
+                <button class="btn btn-primary">Submit Screening Record</button>
+            </form>
+            <p th:unless="${selectedUnit.status == 'Pending Screening'}" style="color:var(--text-secondary)">This unit has already been screened. Status: <strong th:text="${selectedUnit.status}"></strong></p>
+        </div>
+    </section>
+
+    <section class="card" style="margin-top:24px" th:if="${userPermissions == null or userPermissions.contains('VIEW_INVENTORY')}">
+        <h2 class="card-title">All Blood Units</h2>
+        <div class="table-responsive"><table><thead><tr><th>Unit ID</th><th>Group</th><th>Component</th><th>Branch</th><th>Expiry</th><th>Status</th></tr></thead>
+            <tbody><tr th:each="u:${units}"><td><a th:href="@{/portal/qa(unitId=${u.id})}" th:text="${#strings.substring(u.id,0,8) + '...'}"></a></td>
+                <td th:text="${u.bloodGroup}"></td><td th:text="${u.component}"></td><td th:text="${u.branch}"></td>
+                <td th:text="${#temporals.format(u.expiresAt,'dd MMM yyyy')}"></td>
+                <td th:text="${u.status}" th:style="${u.status.contains('Rejected') ? 'color:var(--color-primary)' : ''}"></td></tr></tbody>
+        </table></div>
+    </section>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body></html>
