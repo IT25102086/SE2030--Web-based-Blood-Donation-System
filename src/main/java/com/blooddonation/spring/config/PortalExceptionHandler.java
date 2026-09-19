@@ -1,0 +1,37 @@
+package com.blooddonation.spring.config;
+
+import com.blooddonation.spring.model.UserAccount;
+import com.blooddonation.spring.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@ControllerAdvice(assignableTypes = com.blooddonation.spring.controller.PortalController.class)
+public class PortalExceptionHandler {
+
+    @Autowired
+    private AuthService authService;
+
+    @ExceptionHandler(RuntimeException.class)
+    public String handleAccessDenied(RuntimeException ex, HttpServletRequest request, RedirectAttributes redirects) {
+        HttpSession session = request.getSession(false);
+        UserAccount user = (session != null) ? (UserAccount) session.getAttribute(AuthService.SESSION_USER) : null;
+
+        if (user == null || "Not authenticated".equalsIgnoreCase(ex.getMessage())) {
+            redirects.addFlashAttribute("error", "Please log in to access this feature.");
+            return "redirect:/login";
+        }
+
+        String msg = (ex.getMessage() != null && !ex.getMessage().isBlank()) ? ex.getMessage() : "Access denied.";
+        redirects.addFlashAttribute("error", msg);
+
+        String referer = request.getHeader("Referer");
+        if (referer != null && referer.contains("/portal")) {
+            return "redirect:" + referer;
+        }
+        return "redirect:" + authService.getPortalPath(user.getRole());
+    }
+}

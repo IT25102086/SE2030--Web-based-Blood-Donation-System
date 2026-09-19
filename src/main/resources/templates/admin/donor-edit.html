@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Edit Donor Profile')}"></head>
+<body>
+
+    <!-- Navbar -->
+    <nav th:replace="~{layout :: navbar('admin')}"></nav>
+
+    <!-- Main Container -->
+    <main class="main-wrapper">
+        
+        <!-- Admin Navigation Tab Bar -->
+        <div class="card" style="padding: 16px; margin-bottom: 24px; display: flex; gap: 12px; overflow-x: auto; align-items: center; border-left: 5px solid var(--color-primary);">
+            <a th:href="@{/admin/dashboard}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Dashboard</a>
+            <a th:href="@{/admin/donors}" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Manage Donors</a>
+            <a th:href="@{/admin/requests}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Manage Requests</a>
+            <a th:href="@{/admin/messages}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Messages</a>
+            <a th:href="@{/admin/logout}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px; margin-left: auto; border-color: rgba(220,38,38,0.3); color: var(--color-primary);">Logout Console</a>
+        </div>
+
+        <!-- Alerts -->
+        <div th:replace="~{layout :: alerts}"></div>
+
+        <!-- Edit Form Card -->
+        <div class="card" style="max-width: 680px; margin: 0 auto;">
+            <h2 class="card-title" style="margin-bottom: 20px;">Edit Donor Profile details</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 24px;">
+                Modify donor registration parameters and adjust location coordinates or shift availability timings.
+            </p>
+
+            <form th:action="@{/admin/donors/{id}/edit(id=${donor.id})}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" name="name" th:value="${donor.name}" required minlength="2" class="form-control">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">City *</label>
+                        <input type="text" name="city" th:value="${donor.city}" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" name="phone" th:value="${donor.phone}" required class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Blood Group *</label>
+                        <select name="bloodGroup" required class="form-control">
+                            <option value="A+" th:selected="${donor.bloodGroup == 'A+'}">A+</option>
+                            <option value="A-" th:selected="${donor.bloodGroup == 'A-'}">A-</option>
+                            <option value="B+" th:selected="${donor.bloodGroup == 'B+'}">B+</option>
+                            <option value="B-" th:selected="${donor.bloodGroup == 'B-'}">B-</option>
+                            <option value="AB+" th:selected="${donor.bloodGroup == 'AB+'}">AB+</option>
+                            <option value="AB-" th:selected="${donor.bloodGroup == 'AB-'}">AB-</option>
+                            <option value="O+" th:selected="${donor.bloodGroup == 'O+'}">O+</option>
+                            <option value="O-" th:selected="${donor.bloodGroup == 'O-'}">O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Availability Status</label>
+                        <select name="availability" class="form-control">
+                            <option value="Available" th:selected="${donor.availability == 'Available'}">Available</option>
+                            <option value="Unavailable" th:selected="${donor.availability == 'Unavailable'}">Unavailable</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="edit-allowcall" name="allowCall" th:checked="${donor.allowCall}">
+                        <label for="edit-allowcall">Allow this phone number to be visible publicly</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes (Admin comments / health conditions)</label>
+                    <textarea name="notes" rows="3" class="form-control" placeholder="E.g., Universal donor, active during weekend blood camps only." th:text="${donor.notes}"></textarea>
+                </div>
+
+                <!-- Slots List Builder -->
+                <div class="form-group">
+                    <label class="form-label">Availability Days & Working Hours</label>
+                    <div class="slots-container">
+                        <div id="slots-grid">
+                            <div th:each="slot : ${donor.availabilitySlots}" class="slot-item">
+                                <select name="slotDays" required class="form-control">
+                                    <option value="Mon" th:selected="${slot.day == 'Mon'}">Monday</option>
+                                    <option value="Tue" th:selected="${slot.day == 'Tue'}">Tuesday</option>
+                                    <option value="Wed" th:selected="${slot.day == 'Wed'}">Wednesday</option>
+                                    <option value="Thu" th:selected="${slot.day == 'Thu'}">Thursday</option>
+                                    <option value="Fri" th:selected="${slot.day == 'Fri'}">Friday</option>
+                                    <option value="Sat" th:selected="${slot.day == 'Sat'}">Saturday</option>
+                                    <option value="Sun" th:selected="${slot.day == 'Sun'}">Sunday</option>
+                                </select>
+                                <input type="time" name="slotStarts" required th:value="${slot.startTime}" class="form-control">
+                                <input type="time" name="slotEnds" required th:value="${slot.endTime}" class="form-control">
+                                <button type="button" class="btn btn-secondary btn-sm remove-slot-btn" style="padding: 6px 12px; background: rgba(220,38,38,0.1); color:#dc2626; border-color:transparent;">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-slot-btn" class="slot-add-btn">+ Add Shift Slot</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; justify-content: flex-end; gap: 12px;">
+                    <a th:href="@{/admin/donors}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{layout :: footer}"></footer>
+
+</body>
+</html>
