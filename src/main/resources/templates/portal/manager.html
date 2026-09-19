@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Blood Bank Manager Portal')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar('admin')}"></nav>
+<main class="main-wrapper">
+    <div th:replace="~{portal/_nav :: portalNav('manager')}"></div>
+    <div th:replace="~{layout :: alerts}"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <h1>Stock Dashboard</h1>
+        <a th:href="@{/portal/manager/records}" class="btn btn-primary">Manage Stock Records</a>
+    </div>
+    <p style="color:var(--text-secondary);margin-bottom:24px">UC-13 Monitor Inventory Levels · PBI-13 Real-time Stock · PBI-16 Low-Stock Alerts · PBI-15 Emergency Dispatch</p>
+
+    <div th:if="${!#lists.isEmpty(lowStockAlerts)}" class="alert alert-danger" style="margin-bottom:24px">
+        <strong>Low-Stock Alerts Triggered (PBI-16):</strong>
+        <span th:each="a,iter:${lowStockAlerts}"><span th:text="${a.bloodGroup + ' ' + a.component + ' @ ' + a.branch + ' (' + a.count + ' units — ' + a.status + ')'}"></span><span th:if="${!iter.last}"> · </span></span>
+    </div>
+
+    <section class="card">
+        <h2 class="card-title">Live Stock by Group, Component & Branch (UC-13)</h2>
+        <form method="get" th:action="@{/portal/manager}" style="display:flex;gap:12px;margin-bottom:16px">
+            <input name="branch" th:value="${branchFilter}" placeholder="Filter by branch (optional)">
+            <button class="btn btn-primary">Filter</button>
+            <a th:href="@{/portal/manager}" class="btn btn-secondary">Clear</a>
+        </form>
+        <div class="table-responsive"><table><thead><tr><th>Blood Group</th><th>Component</th><th>Branch</th><th>Units</th><th>Status</th></tr></thead>
+            <tbody><tr th:each="s:${stockSummary}"><td><span class="blood-badge" th:text="${s.bloodGroup}"></span></td>
+                <td th:text="${s.component}"></td><td th:text="${s.branch}"></td><td th:text="${s.count}"></td>
+                <td><span class="status-indicator" th:classappend="${s.status == 'Adequate' ? 'available' : (s.status == 'Low' ? 'open' : 'unavailable')}" th:text="${s.status}"></span></td></tr></tbody>
+        </table></div>
+    </section>
+
+    <div class="form-row" style="grid-template-columns:1fr 1fr;gap:24px;margin-top:24px">
+        <section class="card">
+            <h2 class="card-title">Pending Patient Requests — Approve (PBI-15)</h2>
+            <div th:if="${#lists.isEmpty(pendingRequests)}" style="color:var(--text-secondary)">No pending requests.</div>
+            <div th:each="r:${pendingRequests}" class="item-row" style="padding:12px;margin-bottom:8px">
+                <div><strong th:text="${r.patientName}"></strong> — <span th:text="${r.bloodGroup}"></span> × <span th:text="${r.units}"></span>
+                    <span class="status-indicator open" th:text="${r.urgency}"></span></div>
+                <form th:action="@{/portal/manager/approve/{id}(id=${r.id})}" method="post"><button class="btn btn-primary btn-sm">Approve</button></form>
+            </div>
+        </section>
+        <section class="card">
+            <h2 class="card-title">Hospital Requisitions — Approve</h2>
+            <div th:if="${#lists.isEmpty(submittedRequisitions)}" style="color:var(--text-secondary)">No submitted requisitions.</div>
+            <div th:each="r:${submittedRequisitions}" class="item-row" style="padding:12px;margin-bottom:8px">
+                <div><strong th:text="${r.patientName}"></strong> @ <span th:text="${r.hospital}"></span> — <span th:text="${r.bloodGroup}"></span> × <span th:text="${r.units}"></span></div>
+                <form th:action="@{/portal/manager/approve/{id}(id=${r.id})}" method="post"><button class="btn btn-primary btn-sm">Approve</button></form>
+            </div>
+        </section>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body></html>
