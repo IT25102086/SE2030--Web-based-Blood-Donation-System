@@ -212,3 +212,4 @@ IT Admin Portal (/portal/it/members)
 - Audit log writes happen for every significant action across all portals via `authService.log()`
 - BCrypt (strength 10) is used for all password hashing — never stored in plaintext
 - `spring.jpa.hibernate.ddl-auto=update` means Hibernate auto-creates/updates all tables on startup
+
