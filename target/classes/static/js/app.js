@@ -1,0 +1,165 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Theme Toggle System
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
+    
+    // Check saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeUI(savedTheme);
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeUI(newTheme);
+        });
+    }
+
+    function updateThemeUI(theme) {
+        if (!themeIcon || !themeText) return;
+        if (theme === 'dark') {
+            themeIcon.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
+                </svg>`;
+            themeText.textContent = 'Light';
+        } else {
+            themeIcon.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278M4.858 1.311A7.27 7.27 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.28 7.28 0 0 0 5.201-2.176 10.7 10.7 0 0 1-8.69-8.69 10.7 10.7 0 0 1-3.21-3.321"/>
+                </svg>`;
+            themeText.textContent = 'Dark';
+        }
+    }
+
+
+    // 2. Mobile Responsive Hamburguer Navbar Menu
+    const burgerMenuBtn = document.getElementById('burger-menu-btn');
+    const navMenu = document.getElementById('nav-menu');
+    if (burgerMenuBtn && navMenu) {
+        burgerMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    }
+
+    // Scroll Navbar Effect
+    const navbar = document.getElementById('navbar-container');
+    window.addEventListener('scroll', () => {
+        if (navbar) {
+            if (window.scrollY > 15) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        }
+    });
+
+
+    // 3. Dynamic Slots Builder
+    const addSlotBtn = document.getElementById('add-slot-btn');
+    const slotsGrid = document.getElementById('slots-grid');
+    if (addSlotBtn && slotsGrid) {
+        addSlotBtn.addEventListener('click', () => {
+            const slotItem = document.createElement('div');
+            slotItem.className = 'slot-item';
+            slotItem.innerHTML = `
+                <select name="slotDays" required class="form-control">
+                    <option value="Mon">Monday</option>
+                    <option value="Tue">Tuesday</option>
+                    <option value="Wed">Wednesday</option>
+                    <option value="Thu">Thursday</option>
+                    <option value="Fri">Friday</option>
+                    <option value="Sat">Saturday</option>
+                    <option value="Sun">Sunday</option>
+                </select>
+                <input type="time" name="slotStarts" required class="form-control" value="09:00">
+                <input type="time" name="slotEnds" required class="form-control" value="17:00">
+                <button type="button" class="btn btn-secondary btn-sm remove-slot-btn" style="padding: 6px 12px; background: rgba(220,38,38,0.1); color:#dc2626; border-color:transparent;">
+                    Remove
+                </button>
+            `;
+            slotsGrid.appendChild(slotItem);
+            
+            // Attach event to remove button
+            slotItem.querySelector('.remove-slot-btn').addEventListener('click', () => {
+                slotItem.remove();
+            });
+        });
+
+        // Attach event to existing remove buttons (if any rendered by thymeleaf)
+        document.querySelectorAll('.remove-slot-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.target.closest('.slot-item').remove();
+            });
+        });
+    }
+
+
+    // 4. Modal Handlers
+    window.openModal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('active');
+        }
+    };
+
+    window.closeModal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    };
+    
+    // Close modal on clicking overlay
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('active');
+            }
+        });
+    });
+});
+Commit at 2026-08-27T09:28:16
+Commit at 2026-08-16T04:44:50
+Commit at 2026-08-04T10:17:35
+Commit at 2026-09-15T13:21:43
+Commit at 2026-08-08T19:01:37
+Commit at 2026-08-23T07:40:37
+Commit at 2026-08-06T20:15:36
+Commit at 2026-08-04T03:30:23
+Commit at 2026-08-16T23:49:26
+Commit at 2026-08-31T01:18:15
+Commit at 2026-08-10T18:31:13
+Commit at 2026-08-29T03:35:22
+Commit at 2026-08-25T01:12:12
+Commit at 2026-09-16T19:12:49
+Commit at 2026-08-18T01:22:25
+Commit at 2026-08-28T04:46:08
+Commit at 2026-08-05T00:13:47
+Commit at 2026-08-16T16:28:09
+Commit at 2026-09-05T03:19:43
+Commit at 2026-08-13T08:30:31
+Commit at 2026-08-10T22:12:36
+Commit at 2026-09-07T14:07:50
+Commit at 2026-08-24T13:39:55
+Commit at 2026-08-17T16:23:04
+Commit at 2026-08-20T03:23:53
+Commit at 2026-08-27T06:06:59
+Commit at 2026-08-22T07:51:52
+Commit at 2026-08-19T10:19:15
+Commit at 2026-08-10T20:17:15
+Commit at 2026-09-07T09:12:22
+Commit at 2026-08-13T20:40:16
+Commit at 2026-08-11T16:52:28
+Commit at 2026-09-07T11:08:19
+Commit at 2026-09-05T05:56:42
+Commit at 2026-08-13T17:04:19
+Commit at 2026-08-20T16:25:37
+Commit at 2026-08-26T20:00:39
+Commit at 2026-08-26T01:55:16
+Commit at 2026-08-24T06:02:52
+Commit at 2026-08-30T18:47:29
