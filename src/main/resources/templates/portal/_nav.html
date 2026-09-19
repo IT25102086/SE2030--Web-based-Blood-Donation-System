@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="portalNav(active)" class="card" style="padding:16px;margin-bottom:24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-left:5px solid var(--color-primary)">
+    <span style="font-weight:700;margin-right:8px" th:text="${user.fullName} + ' (' + ${user.role.displayName} + ')'">User</span>
+
+   <a th:if="${user.role.name() == 'IT_ADMIN' or (#lists.contains(accessiblePortals, 'recipient') or #lists.contains(accessiblePortals, 'Recipient Services'))}"
+       th:href="@{/portal/recipient}" class="btn" th:classappend="${active == 'recipient' ? 'btn-primary' : 'btn-secondary'}" style="padding:6px 14px;font-size:.85rem">Recipient Services</a>
+
+   <a th:if="${user.role.name() == 'IT_ADMIN' or (#lists.contains(accessiblePortals, 'hospital') or #lists.contains(accessiblePortals, 'Hospital Coordination'))}"
+       th:href="@{/portal/hospital}" class="btn" th:classappend="${active == 'hospital' ? 'btn-primary' : 'btn-secondary'}" style="padding:6px 14px;font-size:.85rem">Hospital Coordination</a>
+
+   <a th:if="${user.role.name() == 'IT_ADMIN' or (#lists.contains(accessiblePortals, 'qa') or #lists.contains(accessiblePortals, 'QA Screening'))}"
+       th:href="@{/portal/qa}" class="btn" th:classappend="${active == 'qa' ? 'btn-primary' : 'btn-secondary'}" style="padding:6px 14px;font-size:.85rem">QA Screening</a>
+
+   <a th:if="${user.role.name() == 'IT_ADMIN' or (#lists.contains(accessiblePortals, 'delivery') or #lists.contains(accessiblePortals, 'Deliveries'))}"
+       th:href="@{/portal/delivery}" class="btn" th:classappend="${active == 'delivery' ? 'btn-primary' : 'btn-secondary'}" style="padding:6px 14px;font-size:.85rem">Deliveries</a>
+
+   <a th:if="${user.role.name() == 'IT_ADMIN' or (#lists.contains(accessiblePortals, 'manager') or #lists.contains(accessiblePortals, 'Stock Dashboard'))}"
+       th:href="@{/portal/manager}" class="btn" th:classappend="${active == 'manager' ? 'btn-primary' : 'btn-secondary'}" style="padding:6px 14px;font-size:.85rem">Stock Dashboard</a>
+
+    <a th:if="${user.role.name() == 'IT_ADMIN' or (#lists.contains(accessiblePortals, 'it') or #lists.contains(accessiblePortals, 'Admin Console'))}"
+       th:href="@{/portal/it}" class="btn" th:classappend="${active == 'it' ? 'btn-primary' : 'btn-secondary'}" style="padding:6px 14px;font-size:.85rem">Admin Console</a>
+
+    <a th:href="@{/availability}" class="btn btn-secondary" style="padding:6px 14px;font-size:.85rem">Public Availability</a>
+    <a th:href="@{/logout}" class="btn btn-secondary" style="padding:6px 14px;font-size:.85rem;margin-left:auto;color:var(--color-primary)">Logout</a>
+</div>
+</body></html>

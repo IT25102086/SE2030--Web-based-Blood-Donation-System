@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Home')}"></head>
+<body>
+
+    <!-- Navbar -->
+    <nav th:replace="~{layout :: navbar('home')}"></nav>
+
+    <!-- Main Container -->
+    <main class="main-wrapper">
+        
+        <!-- Alerts -->
+        <div th:replace="~{layout :: alerts}"></div>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <span class="hero-subtitle">Save Lives, Connect Hope</span>
+                <h1 class="hero-title">Your Donation Can Save a Life Today</h1>
+                <p class="hero-desc">
+                    BloodConnect bridges the gap between blood donors and recipients. 
+                    Search for active donors in your city or register as a donor to join our life-saving community.
+                </p>
+                <div class="hero-buttons">
+                    <a th:href="@{/availability}" class="btn btn-primary">Check Blood Availability</a>
+                    <a th:href="@{/requests}" class="btn btn-secondary">Request Blood</a>
+                    <a th:href="@{/login}" class="btn btn-secondary">Staff Login</a>
+                </div>
+            </div>
+            <div class="hero-illustration">
+                <!-- SVG Blood Drop / Pulse Connect Graphic -->
+                <svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="120" cy="120" r="100" fill="url(#hero-grad)" fill-opacity="0.1"/>
+                    <circle cx="120" cy="120" r="80" stroke="url(#hero-grad)" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.3"/>
+                    <path d="M120 40C120 40 60 110 60 150C60 183.137 86.8629 210 120 210C153.137 210 180 183.137 180 150C180 110 120 40 120 40Z" fill="url(#drop-grad)" filter="url(#glow)"/>
+                    <path d="M100 145 H140 M120 125 V165" stroke="white" stroke-width="6" stroke-linecap="round" />
+                    <defs>
+                        <linearGradient id="hero-grad" x1="20" y1="20" x2="220" y2="220" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#dc2626"/>
+                            <stop offset="1" stop-color="#f43f5e"/>
+                        </linearGradient>
+                        <linearGradient id="drop-grad" x1="120" y1="40" x2="120" y2="210" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#ef4444"/>
+                            <stop offset="1" stop-color="#991b1b"/>
+                        </linearGradient>
+                        <filter id="glow" x="40" y="20" width="160" height="210" filterUnits="userSpaceOnUse">
+                            <feGaussianBlur stdDeviation="6" result="blur"/>
+                            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                        </filter>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Stats Grid -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <!-- Donors SVG Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6M5.216 14A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4 0 1 1 1 1 1zm2.586-6.208A2.5 2.5 0 0 0 5 10.5a.5.5 0 0 1-1 0 3.5 3.5 0 0 1 5.79-2.656.5.5 0 1 1-.788.616"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${totalDonors}">0</div>
+                    <div class="stat-label">Registered Donors</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <!-- Hand Holding Heart SVG Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M8 14.796a.5.5 0 0 1-.291-.08C5.228 13.067 2.01 10.25 2.01 7.248c0-2.485 2.02-4.5 4.51-4.5.9 0 1.762.26 2.48.748a4.52 4.52 0 0 1 2.48-.748c2.49 0 4.51 2.015 4.51 4.5 0 3.003-3.219 5.82-5.7 7.469a.5.5 0 0 1-.29.08M6.52 3.748c-1.937 0-3.51 1.57-3.51 3.5 0 2.347 2.77 4.908 4.99 6.395 2.22-1.487 4.99-4.048 4.99-6.395 0-1.93-1.573-3.5-3.51-3.5a3.52 3.52 0 0 0-2.24 1.107.5.5 0 0 1-.74 0 3.52 3.52 0 0 0-2.24-1.107"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${totalFulfilledRequests}">0</div>
+                    <div class="stat-label">Saved and Filled Needs</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <!-- Bell Signal Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${totalOpenRequests}">0</div>
+                    <div class="stat-label">Active Requests</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Column Content -->
+        <div class="card">
+            <h2 class="card-title">Urgent Blood Requests</h2>
+            
+            <div th:if="${#lists.isEmpty(urgentRequests)}" style="padding: 24px; text-align: center; color: var(--text-secondary);">
+                <p>No active requests currently. Thank you for checking!</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(urgentRequests)}" class="card-list">
+                <div th:each="req : ${urgentRequests}" class="item-row">
+                    <div class="item-left">
+                        <div class="blood-badge" th:text="${req.bloodGroup}">O+</div>
+                        <div class="item-details">
+                            <span class="item-name" th:text="${req.patientName}">Johnathan Doe</span>
+                            <div class="item-meta">
+                                <span>
+                                    <!-- City SVG -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                      <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                                    </svg>
+                                    <th:block th:text="${req.city}">Colombo</th:block>
+                                </span>
+                                <span>Hospital: <strong th:text="${req.hospital}">NHSL</strong></span>
+                                <span>Needed By: <strong th:text="${#temporals.format(req.neededBy, 'yyyy-MM-dd HH:mm')}">Date</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="item-right">
+                        <a th:href="@{/requests(status='open')}" class="btn btn-primary btn-sm">Support Request</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info / Educational blocks (Rich layout) -->
+        <div class="stats-grid">
+            <div class="card" style="margin-bottom: 0;">
+                <h3 style="color: var(--color-primary); margin-bottom: 12px;">Why Donate Blood?</h3>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 16px;">
+                    A single donation can assist multiple patients when separated into red blood cells, plasma, and platelets. 
+                    Maintaining a healthy flow of donors ensures emergencies are handled without access delay.
+                </p>
+                <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); display: flex; flex-direction: column; gap: 8px;">
+                    <div>✓ Keeps hearts healthy and lowers cancer risk</div>
+                    <div>✓ Free health screening and blood profile lookup</div>
+                    <div>✓ Ultimate joy of giving back and saving 3 lives</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 0;">
+                <h3 style="color: var(--color-info); margin-bottom: 12px;">Donor Eligibility</h3>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 16px;">
+                    Before signing up, make sure you satisfy standard safety requirements so donations are beneficial and risk-free:
+                </p>
+                <div style="font-weight: 500; font-size: 0.9rem; color: var(--text-primary); display: flex; flex-direction: column; gap: 8px;">
+                    <div>⚖ Weight above 50 kg (110 lbs)</div>
+                    <div>🎂 Age between 18 and 60 years old</div>
+                    <div>📅 Last donated date must be <b>at least 4 months ago</b></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{layout :: footer}"></footer>
+
+</body>
+</html>
