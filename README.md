@@ -214,3 +214,4 @@ IT Admin Portal (/portal/it/members)
 - `spring.jpa.hibernate.ddl-auto=update` means Hibernate auto-creates/updates all tables on startup
 
 
+
