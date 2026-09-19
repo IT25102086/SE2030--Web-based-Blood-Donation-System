@@ -17,15 +17,30 @@ def get_positive_int(prompt, default=20):
         except ValueError:
             print("Invalid input. Please enter a valid integer.")
 
-def get_repo_path(prompt, default="."):
+def get_repo_path(prompt, default=None):
+    if default is None:
+        default = os.path.dirname(os.path.abspath(__file__))
+
     while True:
-        user_input = input(f"{prompt} (default current directory): ")
-        if not user_input.strip():
-            return default
-        if os.path.isdir(user_input):
-            return user_input
-        else:
+        user_input = input(f"{prompt} (default {default}): ")
+        repo_path = user_input.strip() or default
+        repo_path = os.path.abspath(repo_path)
+
+        if not os.path.isdir(repo_path):
             print("Directory does not exist. Please enter a valid path.")
+            continue
+
+        result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=repo_path,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            print("That directory is not a Git repository. Please enter a valid repository path.")
+            continue
+
+        return result.stdout.strip()
 
 def get_filename(prompt, default="data.txt"):
     user_input = input(f"{prompt} (default {default}): ")
@@ -214,11 +229,25 @@ def make_commit(date, repo_path, filename, message="graph-greener!", author_name
 
 
 def push_branch(repo_path, branch):
-    result = subprocess.run(["git", "remote"], cwd=repo_path, capture_output=True, text=True)
-    if result.returncode == 0 and result.stdout.strip():
-        subprocess.run(["git", "push", "--set-upstream", "origin", branch], cwd=repo_path)
-    else:
+    result = subprocess.run(
+        ["git", "remote", "get-url", "origin"],
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0 or not result.stdout.strip():
         print("No git remote configured. Skipping push step.")
+        return False
+
+    push_result = subprocess.run(
+        ["git", "push", "--set-upstream", "origin", branch],
+        cwd=repo_path,
+    )
+    if push_result.returncode != 0:
+        print("Push failed. Check the remote URL and your GitHub authentication.")
+        return False
+
+    return True
 
 
 def main():
@@ -228,7 +257,7 @@ def main():
     print("This tool will help you fill your GitHub contribution graph with custom commits.\n")
 
     num_commits = get_positive_int("How many commits do you want to make", 20)
-    repo_path = get_repo_path("Enter the path to your local git repository", ".")
+    repo_path = get_repo_path("Enter the path to your local git repository")
     current_branch = get_current_branch(repo_path)
     branch = get_branch_name("Enter the branch name to commit to", current_branch)
     branch = checkout_or_create_branch(repo_path, branch)
