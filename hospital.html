@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Hospital Coordinator Portal')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar('requests')}"></nav>
+<main class="main-wrapper">
+    <div th:replace="~{portal/_nav :: portalNav('hospital')}"></div>
+    <div th:replace="~{layout :: alerts}"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <h1>Hospital Coordinator Portal</h1>
+        <a th:href="@{/portal/hospital/records}" class="btn btn-primary">Manage Requisitions</a>
+    </div>
+    <p style="color:var(--text-secondary);margin-bottom:24px">UC-09 Submit Hospital Requisition · PBI-10 Check Availability · Hospital: <strong th:text="${user.hospital}">Hospital</strong></p>
+
+    <section class="card" th:if="${userPermissions == null or userPermissions.contains('SUBMIT_REQUISITION')}">
+        <h2 class="card-title">New Hospital Requisition (UC-09)</h2>
+        <form th:action="@{/portal/hospital/requisition}" method="post" th:object="${newRequisition}" id="reqForm">
+            <div class="form-group"><label>Patient / Ward Reference *</label><input th:field="*{patientName}" required placeholder="Patient name or ward ref"></div>
+            <div class="form-row">
+                <div class="form-group"><label>Blood Group *</label>
+                    <select th:field="*{bloodGroup}" id="bg" required onchange="checkAvail()"><option th:each="g:${ {'A+','A-','B+','B-','AB+','AB-','O+','O-'} }" th:value="${g}" th:text="${g}"></option></select>
+                </div>
+                <div class="form-group"><label>Component *</label>
+                    <select th:field="*{component}" id="comp" onchange="checkAvail()"><option value="Whole Blood">Whole Blood</option><option value="Plasma">Plasma</option><option value="Platelets">Platelets</option><option value="Red Cells">Red Cells</option></select>
+                </div>
+                <div class="form-group"><label>Units *</label><input type="number" th:field="*{units}" min="1" required></div>
+            </div>
+            <div id="availResult" style="padding:12px;background:var(--bg-secondary);border-radius:8px;margin-bottom:16px;font-weight:600">Checking availability...</div>
+            <div class="form-row">
+                <div class="form-group"><label>Urgency</label><select th:field="*{urgency}"><option value="Routine">Routine</option><option value="Urgent">Urgent</option><option value="Emergency">Emergency</option></select></div>
+                <div class="form-group"><label>Needed By *</label><input type="datetime-local" name="neededByDate" required th:value="${#temporals.format(#temporals.createNow().plusDays(1),'yyyy-MM-dd') + 'T12:00'}"></div>
+            </div>
+            <div class="form-row"><div class="form-group"><label>City *</label><input th:field="*{city}" value="Colombo" required></div>
+            <div class="form-group"><label>Contact Phone *</label><input th:field="*{contactPhone}" required></div></div>
+            <div class="form-group"><label>Notes</label><textarea th:field="*{notes}" rows="2"></textarea></div>
+            <button class="btn btn-primary">Submit Requisition</button>
+        </form>
+    </section>
+
+    <section class="card" style="margin-top:24px" th:if="${userPermissions == null or userPermissions.contains('TRACK_DISPATCH')}">
+        <h2 class="card-title">Hospital Requisitions & Dispatch Tracking (PBI-11)</h2>
+        <div class="table-responsive"><table><thead><tr><th>Requisition ID</th><th>Patient</th><th>Group</th><th>Units</th><th>Status</th><th>Urgency</th><th>Actions</th></tr></thead>
+            <tbody><tr th:each="r:${requisitions}"><td th:text="${#strings.substring(r.id,0,8) + '...'}"></td><td th:text="${r.patientName}"></td><td th:text="${r.bloodGroup}"></td><td th:text="${r.units}"></td>
+                <td th:text="${r.status}"></td><td th:text="${r.urgency}"></td>
+                <td><form th:if="${r.status == 'Submitted' or r.status == 'Partial Match'}" th:action="@{/portal/hospital/requisition/{id}/cancel(id=${r.id})}" method="post" onsubmit="return confirm('Cancel this requisition?');"><button class="btn btn-secondary btn-sm" type="submit">Cancel</button></form></td></tr></tbody>
+        </table></div>
+    </section>
+</main>
+<script>
+function checkAvail(){
+    const bg=document.getElementById('bg').value, comp=document.getElementById('comp').value;
+    fetch('/portal/hospital/check-availability?bloodGroup='+bg+'&component='+comp).then(r=>r.text()).then(t=>document.getElementById('availResult').textContent='Availability check: '+t);
+}
+checkAvail();
+</script>
+<footer th:replace="~{layout :: footer}"></footer>
+</body></html>
