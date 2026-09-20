@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Recipient Portal')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar('requests')}"></nav>
+<main class="main-wrapper">
+    <div th:replace="~{portal/_nav :: portalNav('recipient')}"></div>
+    <div th:replace="~{layout :: alerts}"></div>
+    <h1>Recipient / Patient Portal</h1>
+    <p style="color:var(--text-secondary);margin-bottom:24px">UC-06 Submit Blood Request · PBI-05 Search Availability · PBI-06 Urgent Request</p>
+
+    <div class="form-row" style="grid-template-columns:1fr 1fr;gap:24px">
+        <section class="card" th:if="${userPermissions == null or userPermissions.contains('VIEW_AVAILABILITY')}">
+            <h2 class="card-title">Search Blood Availability (PBI-05)</h2>
+            <form method="get" th:action="@{/portal/recipient}" style="display:flex;gap:12px;margin-bottom:16px">
+                <select name="bloodGroup"><option value="">All groups</option>
+                    <option th:each="g:${ {'A+','A-','B+','B-','AB+','AB-','O+','O-'} }" th:value="${g}" th:selected="${g == bloodGroup}" th:text="${g}"></option>
+                </select>
+                <button class="btn btn-primary">Search</button>
+            </form>
+            <div class="table-responsive"><table><thead><tr><th>Group</th><th>Component</th><th>Branch</th><th>Expires</th></tr></thead>
+                <tbody><tr th:each="u:${units}"><td><span class="blood-badge" th:text="${u.bloodGroup}"></span></td><td th:text="${u.component}"></td><td th:text="${u.branch}"></td><td th:text="${#temporals.format(u.expiresAt,'dd MMM yyyy')}"></td></tr></tbody>
+            </table></div>
+        </section>
+
+        <section class="card" th:if="${userPermissions == null or userPermissions.contains('SUBMIT_REQUEST')}">
+            <h2 class="card-title">Submit Urgent Blood Request (UC-06)</h2>
+            <form th:action="@{/portal/recipient/request}" method="post" th:object="${newRequest}">
+                <div class="form-group"><label>Patient Name *</label><input th:field="*{patientName}" required></div>
+                <div class="form-row"><div class="form-group"><label>Blood Group *</label>
+                    <select th:field="*{bloodGroup}" required><option th:each="g:${ {'A+','A-','B+','B-','AB+','AB-','O+','O-'} }" th:value="${g}" th:text="${g}"></option></select>
+                </div><div class="form-group"><label>Component</label><select th:field="*{component}"><option value="Whole Blood">Whole Blood</option><option value="Plasma">Plasma</option><option value="Platelets">Platelets</option><option value="Red Cells">Red Cells</option></select></div></div>
+                <div class="form-row"><div class="form-group"><label>Units *</label><input type="number" th:field="*{units}" min="1" required></div>
+                <div class="form-group"><label>Needed By *</label><input type="datetime-local" name="neededByDate" required th:value="${#temporals.format(#temporals.createNow().plusDays(1),'yyyy-MM-dd') + 'T12:00'}"></div></div>
+                <div class="form-row"><div class="form-group"><label>City *</label><input th:field="*{city}" required></div>
+                <div class="form-group"><label>Hospital *</label><input th:field="*{hospital}" required></div></div>
+                <div class="form-group"><label>Contact Phone *</label><input th:field="*{contactPhone}" required></div>
+                <div class="form-group"><label>Notes</label><textarea th:field="*{notes}" rows="2"></textarea></div>
+                <button class="btn btn-primary">Submit Request</button>
+            </form>
+        </section>
+    </div>
+
+    <section class="card" style="margin-top:24px" th:if="${userPermissions == null or userPermissions.contains('TRACK_REQUEST')}">
+        <h2 class="card-title">Track Request Status (PBI-07)</h2>
+        <div class="table-responsive"><table><thead><tr><th>Request ID</th><th>Patient</th><th>Group</th><th>Units</th><th>Status</th><th>Needed By</th><th>Actions</th></tr></thead>
+            <tbody><tr th:each="r:${myRequests}"><td th:text="${#strings.substring(r.id,0,8) + '...'}"></td><td th:text="${r.patientName}"></td><td th:text="${r.bloodGroup}"></td><td th:text="${r.units}"></td>
+                <td><span class="status-indicator" th:text="${r.status}"></span></td><td th:text="${#temporals.format(r.neededBy,'dd MMM yyyy HH:mm')}"></td>
+                <td><form th:if="${r.status == 'Pending' or r.status == 'Partial Match'}" th:action="@{/portal/recipient/request/{id}/cancel(id=${r.id})}" method="post" onsubmit="return confirm('Cancel this request?');"><button class="btn btn-secondary btn-sm" type="submit">Cancel</button></form></td></tr></tbody>
+        </table></div>
+    </section>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body></html>

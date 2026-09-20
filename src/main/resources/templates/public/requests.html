@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Blood Requests Board')}"></head>
+<body>
+
+    <!-- Navbar -->
+    <nav th:replace="~{layout :: navbar('requests')}"></nav>
+
+    <!-- Main Container -->
+    <main class="main-wrapper">
+        
+        <!-- Alerts -->
+        <div th:replace="~{layout :: alerts}"></div>
+
+        <!-- Grid Content -->
+        <div class="content-grid">
+            
+            <!-- Sidebar: Board Controls -->
+            <aside class="sidebar">
+                <button onclick="openModal('create-request-modal')" class="btn btn-primary" style="width: 100%; margin-bottom: 24px;" id="btn-trigger-request-modal">
+                    + Post Blood Request
+                </button>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; font-size: 1.2rem; border-bottom: 2px solid var(--card-border); padding-bottom: 10px;">Filter Board</h3>
+                    
+                    <form th:action="@{/requests}" method="get">
+                        <div class="form-group">
+                            <label for="req-status" class="form-label">Request Status</label>
+                            <select id="req-status" name="status" class="form-control">
+                                <option value="Pending" th:selected="${status == 'Pending'}">Pending review</option>
+                                <option value="Approved" th:selected="${status == 'Approved'}">Approved</option>
+                                <option value="Dispatch Scheduled" th:selected="${status == 'Dispatch Scheduled'}">Dispatch scheduled</option>
+                                <option value="Delivered" th:selected="${status == 'Delivered'}">Delivered</option>
+                                <option value="all" th:selected="${status == 'all'}">All Requests</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="req-bloodGroup" class="form-label">Blood Group Needed</label>
+                            <select id="req-bloodGroup" name="bloodGroup" class="form-control">
+                                <option value="">Any Group</option>
+                                <option value="A+" th:selected="${bloodGroup == 'A+'}">A+</option>
+                                <option value="A-" th:selected="${bloodGroup == 'A-'}">A-</option>
+                                <option value="B+" th:selected="${bloodGroup == 'B+'}">B+</option>
+                                <option value="B-" th:selected="${bloodGroup == 'B-'}">B-</option>
+                                <option value="AB+" th:selected="${bloodGroup == 'AB+'}">AB+</option>
+                                <option value="AB-" th:selected="${bloodGroup == 'AB-'}">AB-</option>
+                                <option value="O+" th:selected="${bloodGroup == 'O+'}">O+</option>
+                                <option value="O-" th:selected="${bloodGroup == 'O-'}">O-</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="req-city" class="form-label">City</label>
+                            <input type="text" id="req-city" name="city" th:value="${city}" placeholder="e.g. Colombo" class="form-control">
+                        </div>
+
+                        <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px;">
+                            <button type="submit" class="btn btn-secondary" style="width: 100%; background-color: var(--bg-primary);">Apply Filters</button>
+                            <a th:href="@{/requests(status='Pending')}" class="btn btn-secondary" style="text-align: center; border-color:transparent;">Reset Filters</a>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- Main Panel: Request board entries -->
+            <section>
+                <div class="card">
+                    <h2 class="card-title" th:text="${status == 'fulfilled' ? 'Resolved Donations Board' : 'Active Blood Requests Board'}">Active Blood Requests</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;"
+                       th:text="${#lists.size(requests)} + ' case(s) found on the board.'">
+                        Viewing requests list.
+                    </p>
+
+                    <div th:if="${#lists.isEmpty(requests)}" style="padding: 48px; text-align: center; color: var(--text-secondary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16" style="margin-bottom: 16px; color: var(--text-secondary); opacity: 0.6;">
+                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                          <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                        </svg>
+                        <p style="font-size: 1.1rem; font-weight: 600;">No requests found matching criteria.</p>
+                        <p style="font-size: 0.9rem; margin-top: 4px;">Thank you for contributing to maintaining records!</p>
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(requests)}" class="card-list">
+                        <div th:each="req : ${requests}" class="item-row" style="align-items: stretch; flex-direction: column; gap: 20px;">
+                            
+                            <!-- Header section inside row card -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 14px;">
+                                    <div class="blood-badge" th:text="${req.bloodGroup}">O-</div>
+                                    <div>
+                                        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);" th:text="${req.patientName}">Kamal</h3>
+                                        <div class="item-meta" style="margin-top: 2px;">
+                                            <span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                                  <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                                                </svg>
+                                                <th:block th:text="${req.city}">Colombo</th:block>
+                                            </span>
+                                            <span>Units Needed: <strong th:text="${req.units}">1</strong></span>
+                                            <span class="status-indicator" 
+                                                  th:classappend="${#strings.equalsIgnoreCase(req.status, 'open') ? 'open' : 'fulfilled'}"
+                                                  th:text="${req.status}">
+                                                open
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span style="font-size: 0.82rem; color: var(--text-secondary); text-align: right;">
+                                    Needed By: <br>
+                                    <strong style="color: var(--color-primary);" th:text="${#temporals.format(req.neededBy, 'yyyy-MM-dd HH:mm')}">Date</strong>
+                                </span>
+                            </div>
+
+                            <!-- Body details of request -->
+                            <div>
+                                <p style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 6px;">
+                                    Hospital Location: <strong th:text="${req.hospital}">Apollo</strong>
+                                </p>
+                                <p style="font-style: italic; color: var(--text-secondary); font-size: 0.92rem; background: var(--bg-secondary); padding: 12px; border-radius: 10px;" 
+                                   th:text="${req.notes}">
+                                    Notes contents
+                                </p>
+                            </div>
+
+                            <!-- Footer action items in requests card -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px dashed var(--card-border);">
+                                <div style="display: flex; gap: 10px;">
+                                    <button onclick="navigator.clipboard.writeText(this.getAttribute('data-phone')); alert('Phone number copied to clipboard!');" 
+                                            th:data-phone="${req.contactPhone}" 
+                                            class="btn btn-secondary btn-sm" style="padding: 6px 14px;">
+                                        Copy Contact: <span th:text="${req.contactPhone}">071...</span>
+                                    </button>
+                                </div>
+
+                                <div style="display: flex; gap: 8px;">
+                                    <form th:action="@{/requests/{id}/status(id=${req.id})}" method="post">
+                                        <input type="hidden" name="status" th:value="${#strings.equalsIgnoreCase(req.status, 'open') ? 'fulfilled' : 'open'}">
+                                        <button type="submit" class="btn btn-sm" 
+                                                th:classappend="${#strings.equalsIgnoreCase(req.status, 'open') ? 'btn-primary' : 'btn-secondary'}" 
+                                                th:text="${#strings.equalsIgnoreCase(req.status, 'open') ? 'Mark as Fulfilled' : 'Re-open Request'}">
+                                            Action
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Overlay Modal: Post Blood Request -->
+    <div class="modal-overlay" id="create-request-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Post Urgent Blood Request</h3>
+                <button onclick="closeModal('create-request-modal')" class="modal-close">&times;</button>
+            </div>
+            
+            <form th:action="@{/requests}" method="post" th:object="${newRequest}">
+                <div class="form-group">
+                    <label class="form-label">Patient Name *</label>
+                    <input type="text" th:field="*{patientName}" required minlength="2" placeholder="e.g. John Doe" class="form-control">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Blood Group Needed *</label>
+                        <select th:field="*{bloodGroup}" required class="form-control">
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Blood Component</label><select th:field="*{component}" class="form-control" required><option value="Whole Blood">Whole Blood</option><option value="Plasma">Plasma</option><option value="Platelets">Platelets</option><option value="Red Cells">Red Cells</option></select></div>
+                    <div class="form-group"><label class="form-label">Urgency</label><select th:field="*{urgency}" class="form-control" required><option value="Routine">Routine</option><option value="Urgent">Urgent</option><option value="Emergency">Emergency</option></select></div>
+
+                    <div class="form-group">
+                        <label class="form-label">Units Needed (Pints) *</label>
+                        <input type="number" th:field="*{units}" min="1" required class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">City *</label>
+                        <input type="text" th:field="*{city}" required placeholder="e.g. Colombo" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Hospital Location</label>
+                        <input type="text" th:field="*{hospital}" placeholder="e.g. National Hospital" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Contact Phone Number *</label>
+                        <input type="tel" th:field="*{contactPhone}" required placeholder="e.g. 0719876543" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Needed By Date *</label>
+                        <!-- Throws local default picker date -->
+                        <input type="datetime-local" name="neededByDate" required class="form-control" th:value="${#temporals.format(#temporals.createNow().plusDays(1), 'yyyy-MM-dd') + 'T12:00'}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Brief Medical Scenario Notes</label>
+                    <textarea th:field="*{notes}" rows="3" placeholder="Describe the reason for emergency case..." class="form-control"></textarea>
+                </div>
+
+                <div style="margin-top: 24px; display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" onclick="closeModal('create-request-modal')" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Post Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{layout :: footer}"></footer>
+
+</body>
+</html>
