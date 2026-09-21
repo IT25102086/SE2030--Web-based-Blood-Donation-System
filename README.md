@@ -213,3 +213,4 @@ IT Admin Portal (/portal/it/members)
 - BCrypt (strength 10) is used for all password hashing — never stored in plaintext
 - `spring.jpa.hibernate.ddl-auto=update` means Hibernate auto-creates/updates all tables on startup
 
+
