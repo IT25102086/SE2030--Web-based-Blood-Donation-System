@@ -11,3 +11,4 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, String
     List<UserAccount> findByRole(UserRole role);
     boolean existsByUsername(String username);
 }
+Commit at 2026-10-02T12:06:02

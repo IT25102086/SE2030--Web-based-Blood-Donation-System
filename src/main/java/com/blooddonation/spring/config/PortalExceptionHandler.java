@@ -35,3 +35,4 @@ public class PortalExceptionHandler {
         return "redirect:" + authService.getPortalPath(user.getRole());
     }
 }
+Commit at 2026-10-02T12:06:02

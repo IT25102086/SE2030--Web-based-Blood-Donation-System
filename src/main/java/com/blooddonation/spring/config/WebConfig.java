@@ -24,3 +24,4 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/admin/login", "/admin/logout", "/css/**", "/js/**");
     }
 }
+Commit at 2026-10-02T12:06:02

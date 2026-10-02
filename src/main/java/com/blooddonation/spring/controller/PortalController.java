@@ -645,3 +645,4 @@ public class PortalController {
         return "redirect:/portal/it";
     }
 }
+Commit at 2026-10-02T12:06:02
