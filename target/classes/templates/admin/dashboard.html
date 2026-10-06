@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Admin Dashboard')}"></head>
+<body>
+
+    <!-- Navbar -->
+    <nav th:replace="~{layout :: navbar('admin')}"></nav>
+
+    <!-- Main Container -->
+    <main class="main-wrapper">
+        
+        <!-- Admin Navigation Tab Bar -->
+        <div class="card" style="padding: 16px; margin-bottom: 24px; display: flex; gap: 12px; overflow-x: auto; align-items: center; border-left: 5px solid var(--color-primary);">
+            <a th:href="@{/admin/dashboard}" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Dashboard</a>
+            <a th:href="@{/admin/donors}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Manage Donors</a>
+            <a th:href="@{/admin/requests}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Manage Requests</a>
+            <a th:href="@{/admin/inventory}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Inventory & QA</a>
+            <a th:href="@{/admin/deliveries}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Deliveries</a>
+            <a th:href="@{/admin/messages}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px; display: flex; align-items: center; gap: 6px;">
+                Messages <span th:if="${unreadMessages > 0}" class="nav-badge" style="margin-left: 0; background: var(--color-primary); color: white; padding: 2px 6px;" th:text="${unreadMessages}">3</span>
+            </a>
+            <a th:href="@{/admin/logout}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px; margin-left: auto; border-color: rgba(220,38,38,0.3); color: var(--color-primary);">Logout Console</a>
+        </div>
+
+        <!-- Alerts -->
+        <div th:replace="~{layout :: alerts}"></div>
+
+        <!-- System Stats Grid -->
+        <section class="stats-grid" style="margin-bottom: 24px;">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6M5.216 14A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4 0 1 1 1 1 1zm2.586-6.208A2.5 2.5 0 0 0 5 10.5a.5.5 0 0 1-1 0 3.5 3.5 0 0 1 5.79-2.656.5.5 0 1 1-.788.616"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${totalDonors}">0</div>
+                    <div class="stat-label">Total Donors</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                      <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${totalOpenRequests}">0</div>
+                    <div class="stat-label">Open Requests</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${totalFulfilledRequests}">0</div>
+                    <div class="stat-label">Fulfilled Requests</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(245,158,11,0.1); color: var(--color-warning);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793zm5 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m5 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-5 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m5 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${unreadMessages}">0</div>
+                    <div class="stat-label">Unread Messages</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Row -->
+        <div class="form-row" style="margin-bottom: 24px; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));">
+            <!-- Blood Group Distribution -->
+            <div class="card" style="margin-bottom: 0;">
+                <h3 class="card-title" style="margin-bottom: 20px;">Blood Group Distribution</h3>
+                <div th:if="${#maps.isEmpty(bloodGroupStats)}" style="padding: 20px; text-align: center; color: var(--text-secondary);">
+                    No donor statistics available.
+                </div>
+                <div th:unless="${#maps.isEmpty(bloodGroupStats)}" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div th:each="entry : ${bloodGroupStats}">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; margin-bottom: 4px;">
+                            <span th:text="${entry.key} + ' Group'">A+</span>
+                            <span th:text="${entry.value} + ' don.'">2</span>
+                        </div>
+                        <div style="height: 10px; background: var(--bg-secondary); border-radius: 5px; overflow: hidden;">
+                            <div th:style="'height: 100%; border-radius: 5px; background: var(--color-primary); width: ' + (${entry.value} * 100.0 / ${totalDonors}) + '%'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- City Distribution -->
+            <div class="card" style="margin-bottom: 0;">
+                <h3 class="card-title" style="margin-bottom: 20px; border-color: var(--color-info);">City Distribution</h3>
+                <div th:if="${#maps.isEmpty(cityStats)}" style="padding: 20px; text-align: center; color: var(--text-secondary);">
+                    No city statistics available.
+                </div>
+                <div th:unless="${#maps.isEmpty(cityStats)}" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div th:each="entry : ${cityStats}">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; margin-bottom: 4px;">
+                            <span th:text="${entry.key}">Colombo</span>
+                            <span th:text="${entry.value} + ' don.'">3</span>
+                        </div>
+                        <div style="height: 10px; background: var(--bg-secondary); border-radius: 5px; overflow: hidden;">
+                            <div th:style="'height: 100%; border-radius: 5px; background: var(--color-info); width: ' + (${entry.value} * 100.0 / ${totalDonors}) + '%'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Previews Grid -->
+        <div class="form-row" style="grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));">
+            <!-- Recent Requests -->
+            <div class="card" style="margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 class="card-title" style="margin-bottom: 0;">Open Blood Requests</h3>
+                    <a th:href="@{/admin/requests}" style="font-size: 0.85rem; font-weight: 600;">View All →</a>
+                </div>
+                <div th:if="${#lists.isEmpty(recentRequests)}" style="padding: 20px; text-align: center; color: var(--text-secondary);">
+                    No open requests right now.
+                </div>
+                <div th:unless="${#lists.isEmpty(recentRequests)}" class="card-list">
+                    <div th:each="req : ${recentRequests}" class="item-row" style="padding: 12px 16px;">
+                        <div class="item-left" style="gap: 12px;">
+                            <div class="blood-badge" style="min-width: 40px; height: 40px; font-size: 0.95rem;" th:text="${req.bloodGroup}">O-</div>
+                            <div class="item-details">
+                                <span class="item-name" style="font-size: 0.95rem;" th:text="${req.patientName}">Kamal Silva</span>
+                                <span class="item-meta" style="font-size: 0.8rem; margin-top: 2px;">
+                                    City: <th:block th:text="${req.city}">Colombo</th:block>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="item-right">
+                            <span class="status-indicator open" style="padding: 2px 8px; font-size: 0.72rem;">Open</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Messages -->
+            <div class="card" style="margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 class="card-title" style="margin-bottom: 0; border-color: var(--color-warning);">Recent Contact Messages</h3>
+                    <a th:href="@{/admin/messages}" style="font-size: 0.85rem; font-weight: 600;">View All →</a>
+                </div>
+                <div th:if="${#lists.isEmpty(recentMessages)}" style="padding: 20px; text-align: center; color: var(--text-secondary);">
+                    No contact messages yet.
+                </div>
+                <div th:unless="${#lists.isEmpty(recentMessages)}" class="card-list">
+                    <div th:each="msg : ${recentMessages}" class="item-row" style="padding: 12px 16px; flex-direction: row; align-items: center;">
+                        <div class="item-details" style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="item-name" style="font-size: 0.95rem;" th:text="${msg.name}">Lasitha</span>
+                                <span th:if="${'unread'.equals(msg.status)}" class="status-indicator unavailable" style="padding: 1px 6px; font-size: 0.65rem;">New</span>
+                            </div>
+                            <span class="item-meta" style="font-size: 0.8rem; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;" th:text="${msg.subject}">Subject text details</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{layout :: footer}"></footer>
+
+</body>
+</html>
+Commit at 2026-10-02T12:06:02
+Commit at 2026-10-04T10:54:33
+Commit at 2026-10-02T19:50:38
+Commit at 2026-09-25T04:35:13
+Commit at 2026-10-02T20:26:15
+Commit at 2026-09-30T20:13:06
+Commit at 2026-10-01T05:10:46
+Commit at 2026-09-25T09:40:09
+Commit at 2026-09-29T19:47:07
+Commit at 2026-10-02T01:42:21
+Commit at 2026-10-04T17:18:10
+Commit at 2026-10-02T12:57:37
+Commit at 2026-10-04T07:27:49
+Commit at 2026-10-05T02:28:31
+Commit at 2026-10-04T14:49:49
+Commit at 2026-09-29T21:30:56
+Commit at 2026-09-25T19:55:53
+Commit at 2026-09-27T17:13:43
+Commit at 2026-10-04T09:38:02
+Commit at 2026-10-05T07:36:11
+Commit at 2026-09-28T10:37:31
+Commit at 2026-09-26T03:02:07
+Commit at 2026-09-25T16:11:22
+Commit at 2026-10-02T06:47:43
+Commit at 2026-09-28T00:23:44
+Commit at 2026-09-30T18:59:04
+Commit at 2026-10-03T09:46:50
+Commit at 2026-10-03T10:07:02
+Commit at 2026-10-02T06:07:37
+Commit at 2026-10-01T23:55:20
