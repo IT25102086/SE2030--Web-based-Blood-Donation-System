@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Hospital Requisition Management')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar('requests')}"></nav>
+<main class="main-wrapper">
+    <div th:replace="~{portal/_nav :: portalNav('hospital')}"></div>
+    <div th:replace="~{layout :: alerts}"></div>
+
+    <div class="page-heading">
+        <div>
+            <h1>Hospital Requisition Management</h1>
+            <p>Submit, view, update, and remove open requisitions for <strong th:text="${user.hospital}">Hospital</strong>.</p>
+        </div>
+        <a th:href="@{/portal/hospital}" class="btn btn-secondary">Back to Hospital Portal</a>
+    </div>
+
+    <section class="card" th:if="${userPermissions == null or userPermissions.contains('SUBMIT_REQUISITION')}">
+        <h2 class="card-title">Create New Requisition</h2>
+        <form th:action="@{/portal/hospital/records}" method="post" th:object="${newRequisition}">
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Patient / Ward Reference *</label><input class="form-control" th:field="*{patientName}" required></div>
+                <div class="form-group"><label class="form-label">Blood Group *</label>
+                    <select class="form-control" th:field="*{bloodGroup}" required>
+                        <option value="">Select</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option>
+                    </select>
+                </div>
+                <div class="form-group"><label class="form-label">Component *</label><select class="form-control" th:field="*{component}" required><option value="Whole Blood">Whole Blood</option><option value="Red Cells">Red Cells</option><option value="Plasma">Plasma</option><option value="Platelets">Platelets</option></select></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Units *</label><input class="form-control" type="number" min="1" th:field="*{units}" required></div>
+                <div class="form-group"><label class="form-label">Urgency</label><select class="form-control" th:field="*{urgency}"><option value="Routine">Routine</option><option value="Urgent">Urgent</option><option value="Emergency">Emergency</option></select></div>
+                <div class="form-group"><label class="form-label">Needed By *</label><input class="form-control" type="datetime-local" name="neededByDate" required></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">City *</label><input class="form-control" th:field="*{city}" required></div>
+                <div class="form-group"><label class="form-label">Contact Phone *</label><input class="form-control" th:field="*{contactPhone}" required></div>
+            </div>
+            <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" rows="2" th:field="*{notes}"></textarea></div>
+            <button class="btn btn-primary" type="submit">Create Requisition</button>
+        </form>
+    </section>
+
+    <section class="card" style="margin-top:24px">
+        <h2 class="card-title">My Hospital Requisitions</h2>
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>Reference</th><th>Group</th><th>Component</th><th>Units</th><th>Needed By</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                <tr th:each="req:${requisitions}">
+                    <td th:text="${req.patientName}">Patient</td>
+                    <td th:text="${req.bloodGroup}">A+</td>
+                    <td th:text="${req.component}">Whole Blood</td>
+                    <td th:text="${req.units}">1</td>
+                    <td th:text="${#temporals.format(req.neededBy, 'dd MMM yyyy HH:mm')}">Date</td>
+                    <td th:text="${req.status}">Submitted</td>
+                    <td>
+                        <details class="hospital-edit" th:if="${req.status == 'Submitted' or req.status == 'Partial Match'}">
+                            <summary class="btn btn-secondary btn-sm">Update</summary>
+                            <form class="hospital-edit-form" th:action="@{/portal/hospital/records/{id}/update(id=${req.id})}" method="post">
+                                <div class="form-row">
+                                    <div class="form-group"><label class="form-label">Patient / Ward</label><input class="form-control" name="patientName" th:value="${req.patientName}" required></div>
+                                    <div class="form-group"><label class="form-label">Blood Group</label><select class="form-control" name="bloodGroup" required>
+                                        <option value="A+" th:selected="${req.bloodGroup == 'A+'}">A+</option><option value="A-" th:selected="${req.bloodGroup == 'A-'}">A-</option><option value="B+" th:selected="${req.bloodGroup == 'B+'}">B+</option><option value="B-" th:selected="${req.bloodGroup == 'B-'}">B-</option><option value="AB+" th:selected="${req.bloodGroup == 'AB+'}">AB+</option><option value="AB-" th:selected="${req.bloodGroup == 'AB-'}">AB-</option><option value="O+" th:selected="${req.bloodGroup == 'O+'}">O+</option><option value="O-" th:selected="${req.bloodGroup == 'O-'}">O-</option>
+                                    </select></div>
+                                    <div class="form-group"><label class="form-label">Component</label><select class="form-control" name="component" required><option value="Whole Blood" th:selected="${req.component == 'Whole Blood'}">Whole Blood</option><option value="Red Cells" th:selected="${req.component == 'Red Cells'}">Red Cells</option><option value="Plasma" th:selected="${req.component == 'Plasma'}">Plasma</option><option value="Platelets" th:selected="${req.component == 'Platelets'}">Platelets</option></select></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group"><label class="form-label">Units</label><input class="form-control" type="number" min="1" name="units" th:value="${req.units}" required></div>
+                                    <div class="form-group"><label class="form-label">Urgency</label><select class="form-control" name="urgency"><option value="Routine" th:selected="${req.urgency == 'Routine'}">Routine</option><option value="Urgent" th:selected="${req.urgency == 'Urgent'}">Urgent</option><option value="Emergency" th:selected="${req.urgency == 'Emergency'}">Emergency</option></select></div>
+                                    <div class="form-group"><label class="form-label">Needed By</label><input class="form-control" type="datetime-local" name="neededBy" th:value="${#temporals.format(req.neededBy, 'yyyy-MM-dd''T''HH:mm')}" required></div>
+                                </div>
+                                <div class="form-row"><div class="form-group"><label class="form-label">City</label><input class="form-control" name="city" th:value="${req.city}" required></div><div class="form-group"><label class="form-label">Contact Phone</label><input class="form-control" name="contactPhone" th:value="${req.contactPhone}" required></div></div>
+                                <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" name="notes" rows="2" th:text="${req.notes}"></textarea></div>
+                                <button class="btn btn-primary btn-sm" type="submit">Save Update</button>
+                            </form>
+                        </details>
+                        <form th:if="${req.status == 'Submitted' or req.status == 'Partial Match'}" th:action="@{/portal/hospital/records/{id}/delete(id=${req.id})}" method="post" style="display:inline" onsubmit="return confirm('Delete this requisition?');"><button class="btn btn-danger btn-sm" type="submit">Delete</button></form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<style>
+    .page-heading { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:24px; }
+    .page-heading h1 { margin-bottom:6px; }
+    .page-heading p { margin:0; color:var(--text-secondary); }
+    .hospital-edit { position:relative; display:inline-block; margin-right:6px; }
+    .hospital-edit summary { cursor:pointer; list-style:none; }
+    .hospital-edit summary::-webkit-details-marker { display:none; }
+    .hospital-edit-form { position:absolute; z-index:5; right:0; top:calc(100% + 8px); width:min(720px, 78vw); padding:18px; background:#fff; border:1px solid var(--card-border); border-radius:12px; box-shadow:var(--shadow-md); text-align:left; }
+    @media (max-width:700px) { .hospital-edit-form { position:fixed; left:5vw; top:10vh; width:90vw; max-height:78vh; overflow:auto; } }
+</style>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>
