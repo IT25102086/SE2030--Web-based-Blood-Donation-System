@@ -1,0 +1,6 @@
+/* portal-hospital.css — owned by IT25102084 (Hospital Coordinator).
+   Loaded only by templates/portal/hospital.html.
+   Put hospital-specific styling here. Shared styles stay in css/style.css. */
+.portal-hospital-scope .form-card {
+    scroll-margin-top: 90px;
+}
