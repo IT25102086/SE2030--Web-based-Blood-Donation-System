@@ -1,211 +1,188 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head('Manage Requests')}"></head>
+<head th:replace="~{layout :: head('Manage Requests - Admin')}"></head>
 <body>
 
-    <!-- Navbar -->
-    <nav th:replace="~{layout :: navbar('admin')}"></nav>
+    <!-- Header & Navigation -->
+    <header th:replace="~{layout :: navbar('admin')}"></header>
 
-    <!-- Main Container -->
-    <main class="main-wrapper">
-        
-        <!-- Admin Navigation Tab Bar -->
-        <div class="card" style="padding: 16px; margin-bottom: 24px; display: flex; gap: 12px; overflow-x: auto; align-items: center; border-left: 5px solid var(--color-primary);">
-            <a th:href="@{/admin/dashboard}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Dashboard</a>
-            <a th:href="@{/admin/donors}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Manage Donors</a>
-            <a th:href="@{/admin/requests}" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Manage Requests</a>
-            <a th:href="@{/admin/messages}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Messages</a>
-            <a th:href="@{/admin/logout}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px; margin-left: auto; border-color: rgba(220,38,38,0.3); color: var(--color-primary);">Logout Console</a>
+    <main class="container" style="padding-block: 40px 80px;">
+        <!-- Admin Navigation Bar -->
+        <div class="portal-bar">
+            <span class="portal-title">Admin Console</span>
+            <a th:href="@{/admin/dashboard}" class="btn btn-secondary btn-sm">Dashboard</a>
+            <a th:href="@{/admin/donors}" class="btn btn-secondary btn-sm">Donors</a>
+            <a th:href="@{/admin/requests}" class="btn btn-primary btn-sm">Requests</a>
+            <a th:href="@{/admin/inventory}" class="btn btn-secondary btn-sm">Inventory &amp; QA</a>
+            <a th:href="@{/admin/deliveries}" class="btn btn-secondary btn-sm">Deliveries</a>
+            <a th:href="@{/admin/messages}" class="btn btn-secondary btn-sm">Messages</a>
+            <a th:href="@{/admin/logout}" class="btn btn-secondary btn-sm" style="margin-left: auto; color: var(--crimson); border-color: #fca5a5;">Logout Console</a>
         </div>
 
         <!-- Alerts -->
         <div th:replace="~{layout :: alerts}"></div>
 
-        <!-- Layout Grid -->
-        <div class="content-grid">
-            
-            <!-- Sidebar: Create & Filters -->
-            <aside class="sidebar">
-                <!-- Search & Filters -->
-                <div class="card" style="padding: 24px; margin-bottom: 20px;">
-                    <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 16px;">Filter Requests</h3>
-                    <form th:action="@{/admin/requests}" method="get" style="display: flex; flex-direction: column; gap: 14px;">
-                        <input type="hidden" name="status" th:value="${status}">
-                        
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label for="filter-status" class="form-label">Status</label>
-                            <select id="filter-status" name="status" class="form-control">
-                                <option value="all" th:selected="${status == 'all'}">All Stages</option>
-                                <option value="Pending" th:selected="${status == 'Pending' || status == null}">Pending</option>
-                                <option value="Approved" th:selected="${status == 'Approved'}">Approved</option>
-                                <option value="Dispatch Scheduled" th:selected="${status == 'Dispatch Scheduled'}">Dispatch Scheduled</option>
-                                <option value="Delivered" th:selected="${status == 'Delivered'}">Delivered</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label for="filter-blood" class="form-label">Blood Group</label>
-                            <select id="filter-blood" name="bloodGroup" class="form-control">
-                                <option value="Any" th:selected="${bloodGroup == 'Any'}">Any Group</option>
-                                <option value="A+" th:selected="${bloodGroup == 'A+'}">A+</option>
-                                <option value="A-" th:selected="${bloodGroup == 'A-'}">A-</option>
-                                <option value="B+" th:selected="${bloodGroup == 'B+'}">B+</option>
-                                <option value="B-" th:selected="${bloodGroup == 'B-'}">B-</option>
-                                <option value="AB+" th:selected="${bloodGroup == 'AB+'}">AB+</option>
-                                <option value="AB-" th:selected="${bloodGroup == 'AB-'}">AB-</option>
-                                <option value="O+" th:selected="${bloodGroup == 'O+'}">O+</option>
-                                <option value="O-" th:selected="${bloodGroup == 'O-'}">O-</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label for="filter-city" class="form-label">City</label>
-                            <input type="text" id="filter-city" name="city" class="form-control" th:value="${city}" placeholder="Colombo, Galle...">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 6px;">
-                            Filter board
-                        </button>
-                        <a th:href="@{/admin/requests}" class="btn btn-secondary btn-sm" style="width: 100%; text-align: center;">Reset</a>
-                    </form>
+        <!-- Filter & Actions Card -->
+        <div class="search-filter-card" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 16px;">
+                <div style="display: flex; gap: 8px;">
+                    <a th:href="@{/admin/requests(status='Pending')}" class="btn btn-sm" th:classappend="${status == 'Pending' ? 'btn-primary' : 'btn-secondary'}">Pending</a>
+                    <a th:href="@{/admin/requests(status='Delivered')}" class="btn btn-sm" th:classappend="${status == 'Delivered' ? 'btn-primary' : 'btn-secondary'}">Delivered</a>
+                    <a th:href="@{/admin/requests(status='')}" class="btn btn-sm" th:classappend="${status == null or status == '' ? 'btn-primary' : 'btn-secondary'}">All</a>
                 </div>
+                <button type="button" class="btn btn-crimson btn-sm" onclick="openModal('admin-request-modal')">+ Create Request</button>
+            </div>
 
-                <!-- Create Request Directly -->
-                <div class="card" style="padding: 24px;">
-                    <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 16px; border-color: var(--color-info);">Create Request</h3>
-                    <form th:action="@{/admin/requests/new}" method="post" th:object="${newRequest}" style="display: flex; flex-direction: column; gap: 14px;">
-                        
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Patient Full Name</label>
-                            <input type="text" th:field="*{patientName}" class="form-control" required placeholder="Kamal Jayawardena">
-                        </div>
-
-                        <div class="form-row" style="margin-bottom: 0; gap: 10px;">
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label">Blood Group *</label>
-                                <select th:field="*{bloodGroup}" class="form-control" required>
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
-                                </select>
-                            </div>
-                            <div class="form-group"><label class="form-label">Component</label><select th:field="*{component}" class="form-control"><option value="Whole Blood">Whole Blood</option><option value="Plasma">Plasma</option><option value="Platelets">Platelets</option><option value="Red Cells">Red Cells</option></select></div>
-                            <div class="form-group"><label class="form-label">Urgency</label><select th:field="*{urgency}" class="form-control"><option value="Routine">Routine</option><option value="Urgent">Urgent</option><option value="Emergency">Emergency</option></select></div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label">Units Needed</label>
-                                <input type="number" th:field="*{units}" class="form-control" required min="1" max="10" value="1">
-                            </div>
-                        </div>
-
-                        <div class="form-row" style="margin-bottom: 0; gap: 10px;">
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label">Hospital</label>
-                                <input type="text" th:field="*{hospital}" class="form-control" required placeholder="NHSL Colombo">
-                            </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label">City *</label>
-                                <input type="text" th:field="*{city}" class="form-control" required placeholder="Colombo">
-                            </div>
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Contact Number *</label>
-                            <input type="tel" th:field="*{contactPhone}" class="form-control" required placeholder="0719876543">
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Needed By Date *</label>
-                            <input type="datetime-local" name="neededByDate" class="form-control" required th:value="${#temporals.format(#temporals.createNow().plusDays(2), 'yyyy-MM-dd') + 'T12:00'}">
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Notes / Urgency Details</label>
-                            <textarea th:field="*{notes}" rows="2" class="form-control" placeholder="Urgent surgery scheduled. Please contact."></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-sm" style="background-color: var(--color-info); border-color: var(--color-info); box-shadow: 0 4px 10px rgba(6, 182, 212, 0.2); width: 100%; margin-top: 6px;">
-                            Post Request
-                        </button>
-                    </form>
+            <form th:action="@{/admin/requests}" method="get" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; align-items: end;">
+                <input type="hidden" name="status" th:value="${status}">
+                <div class="form-group">
+                    <label class="form-label">Blood Group</label>
+                    <select name="bloodGroup" class="form-select">
+                        <option value="">All Groups</option>
+                        <option th:each="g : ${ {'A+','A-','B+','B-','AB+','AB-','O+','O-'} }" th:value="${g}" th:selected="${g == bloodGroup}" th:text="${g}"></option>
+                    </select>
                 </div>
-            </aside>
-
-            <!-- Main Panel: Request board list -->
-            <section class="main-content">
-                <div class="card" style="margin-bottom: 0;">
-                    <h2 class="card-title" style="margin-bottom: 24px;">Requests Registry (<span th:text="${#lists.size(requests)}">0</span>)</h2>
-                    
-                    <div th:if="${#lists.isEmpty(requests)}" style="padding: 48px; text-align: center; color: var(--text-secondary);">
-                        <p>No blood donation requests matching criteria were found.</p>
-                    </div>
-
-                    <div th:unless="${#lists.isEmpty(requests)}" class="card-list">
-                        <div th:each="req : ${requests}" class="item-row" style="align-items: stretch; flex-direction: column; gap: 16px;">
-                            
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
-                                <div class="item-left flex-wrap">
-                                    <div class="blood-badge" th:text="${req.bloodGroup}">O+</div>
-                                    <div class="item-details">
-                                        <span class="item-name" th:text="${req.patientName}">Patient Name</span>
-                                        <div class="item-meta">
-                                            <span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                                                  <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
-                                                </svg>
-                                                <th:block th:text="${req.city}">City</th:block>
-                                            </span>
-                                            <span>Hospital: <b th:text="${req.hospital}">NHSL</b></span>
-                                            <span>Units Needed: <b th:text="${req.units}">1</b> pint</span>
-                                            <span>Coordinate Phone: <b th:text="${req.contactPhone}">0771234567</b></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                                    <span class="status-indicator" th:classappend="${req.status}" th:text="${req.status}">Status</span>
-                                    <span style="font-size: 0.8rem; color: var(--text-secondary);" th:text="'Before: ' + ${#temporals.format(req.neededBy, 'yyyy-MM-dd HH:mm')}">Time Limit</span>
-                                </div>
-                            </div>
-
-                            <!-- Notes row if available -->
-                            <div th:if="${req.notes != null && !req.notes.trim().isEmpty()}" style="font-size: 0.9rem; color: var(--text-secondary); background: var(--bg-secondary); padding: 8px 12px; border-radius: 8px; margin-top: -4px;">
-                                <b>Request description:</b> <span th:text="${req.notes}">Additional context details about urgency</span>
-                            </div>
-
-                            <!-- Actions Row details -->
-                            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--card-border); padding-top: 12px; margin-top: 4px; align-items: center;">
-                                
-                                <!-- Status Toggle Button -->
-                                <form th:action="@{/admin/requests/{id}/status(id=${req.id})}" method="post" style="margin: 0;">
-                                    <input type="hidden" name="status" th:value="${'Pending'.equals(req.status) ? 'Approved' : 'Delivered'}">
-                                    <button type="submit" class="btn btn-secondary btn-sm" th:text="${'Pending'.equals(req.status) ? 'Approve request' : 'Mark delivered'}">
-                                        Mark as Fulfilled
-                                    </button>
-                                </form>
-
-                                <!-- Delete Trigger form -->
-                                <form th:action="@{/admin/requests/{id}/delete(id=${req.id})}" method="post" onsubmit="return confirm('Are you sure you want to permanently delete this blood request?')" style="margin: 0;">
-                                    <button type="submit" class="btn btn-secondary btn-sm" style="color: var(--color-primary); border-color: rgba(220,38,38,0.25); background: rgba(220,38,38,0.05);">
-                                        Delete Request
-                                    </button>
-                                </form>
-
-                            </div>
-
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">City</label>
+                    <input type="text" name="city" th:value="${city}" placeholder="City..." class="form-control">
                 </div>
-            </section>
-
+                <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn btn-secondary" style="flex: 1; height: 46px;">Filter</button>
+                    <a th:href="@{/admin/requests}" class="btn btn-secondary" style="height: 46px; padding-inline: 14px;">Reset</a>
+                </div>
+            </form>
         </div>
 
+        <!-- Requests Table -->
+        <div class="form-card" style="margin: 0; padding: 24px;">
+            <h2 style="font-size: 1.35rem; color: var(--oxford-blue-1); font-weight: 800; margin-bottom: 18px;">
+                Hospital &amp; Patient Blood Requests (<span th:text="${#lists.size(requests)}">0</span>)
+            </h2>
+
+            <div th:if="${#lists.isEmpty(requests)}" style="padding: 30px; text-align: center; color: var(--slate-500);">
+                No requests found.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(requests)}" class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>Patient Name</th>
+                            <th>Hospital &amp; City</th>
+                            <th>Units</th>
+                            <th>Needed By</th>
+                            <th>Urgency</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${requests}">
+                            <td><span class="blood-badge sm" th:text="${r.bloodGroup}">O+</span></td>
+                            <td><strong th:text="${r.patientName}">Name</strong></td>
+                            <td><span th:text="${r.hospital}">Hospital</span>, <span th:text="${r.city}">City</span></td>
+                            <td><span class="status-badge available" th:text="${r.units} + ' bag(s)'">1</span></td>
+                            <td th:text="${r.neededBy != null ? #temporals.format(r.neededBy, 'dd MMM yyyy HH:mm') : '—'}">Date</td>
+                            <td><span class="urgency-pill urgent" th:text="${r.urgency != null ? r.urgency : 'Urgent'}">Urgent</span></td>
+                            <td>
+                                <span class="status-badge" th:classappend="${#strings.equalsIgnoreCase(r.status, 'Delivered') ? 'available' : 'unavailable'}" th:text="${r.status}">Pending</span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 6px; align-items: center;">
+                                    <form th:action="@{/admin/requests/{id}/status(id=${r.id})}" method="post" style="display: inline;">
+                                        <input th:if="${#strings.equalsIgnoreCase(r.status, 'Pending')}" type="hidden" name="status" value="Delivered">
+                                        <input th:unless="${#strings.equalsIgnoreCase(r.status, 'Pending')}" type="hidden" name="status" value="Pending">
+                                        <button type="submit" class="btn btn-secondary btn-sm" th:text="${#strings.equalsIgnoreCase(r.status, 'Pending') ? 'Fulfill' : 'Reopen'}">Fulfill</button>
+                                    </form>
+                                    <form th:action="@{'/admin/requests/' + ${r.id} + '/delete'}" method="post" style="display: inline;" onsubmit="return confirm('Delete this blood request?');">
+                                        <button type="submit" class="btn btn-sm" style="font-size: 0.78rem; padding: 4px 8px; color: #dc2626; border: 1px solid #fca5a5; background: #fff;">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Create Request Modal -->
+        <div id="admin-request-modal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(14,37,78,0.6);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+            <div class="form-card" style="max-width: 600px; width: 100%; margin: 0; max-height: 90vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 1.4rem; color: var(--oxford-blue-1); font-weight: 800;">Create Blood Request</h3>
+                    <button type="button" onclick="closeModal('admin-request-modal')" style="font-size: 1.5rem; color: var(--slate-400); cursor: pointer;">&times;</button>
+                </div>
+
+                <form th:action="@{/admin/requests/new}" method="post" th:object="${newRequest}">
+                    <div class="form-grid-2" style="margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label class="form-label">Patient Name *</label>
+                            <input type="text" th:field="*{patientName}" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Blood Group *</label>
+                            <select th:field="*{bloodGroup}" required class="form-select">
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid-2" style="margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label class="form-label">Hospital *</label>
+                            <input type="text" th:field="*{hospital}" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City *</label>
+                            <input type="text" th:field="*{city}" required class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-grid-2" style="margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label class="form-label">Units Needed *</label>
+                            <input type="number" th:field="*{units}" min="1" max="20" value="1" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Phone *</label>
+                            <input type="tel" th:field="*{contactPhone}" required class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-grid-2" style="margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label class="form-label">Needed By *</label>
+                            <input type="datetime-local" name="neededByDate" required class="form-control"
+                                   th:value="${#temporals.format(#temporals.createNow().plusDays(1), 'yyyy-MM-dd') + 'T12:00'}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Urgency</label>
+                            <select th:field="*{urgency}" class="form-select">
+                                <option value="Urgent">Urgent</option>
+                                <option value="Critical">Critical</option>
+                                <option value="Routine">Routine</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">Notes</label>
+                        <textarea th:field="*{notes}" rows="3" class="form-control"></textarea>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('admin-request-modal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
 
-    <!-- Footer -->
+    <!-- Footer Component -->
     <footer th:replace="~{layout :: footer}"></footer>
 
 </body>

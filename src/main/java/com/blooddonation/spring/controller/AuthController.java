@@ -5,7 +5,6 @@ import com.blooddonation.spring.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -16,27 +15,17 @@ public class AuthController {
     private AuthService authService;
 
     @GetMapping("/login")
-    public String loginForm(HttpSession session, Model model,
-                            @RequestParam(required = false) boolean noAccess) {
+    public String loginForm(HttpSession session) {
         if (session.getAttribute(AuthService.SESSION_USER) != null) {
             UserAccount user = (UserAccount) session.getAttribute(AuthService.SESSION_USER);
-            if (authService.hasAnyPortalAccess(user)) return "redirect:" + authService.getPortalPath(user);
-            model.addAttribute("error", "No site access is assigned to this account. Contact your IT Administrator.");
-            return "login";
+            return "redirect:" + authService.getHomePath(user);
         }
-        if (noAccess) model.addAttribute("error", "No site access is assigned to this account. Contact your IT Administrator.");
         return "login";
     }
 
     @PostMapping("/login")
     public String loginSubmit(@RequestParam String username, @RequestParam String password,
                               HttpSession session, RedirectAttributes redirects) {
-        var existingUser = authService.getUserByUsername(username);
-        if (existingUser.isPresent() && !existingUser.get().isActive()) {
-            redirects.addFlashAttribute("error", "This account has been disabled. Please contact the IT administrator.");
-            return "redirect:/login";
-        }
-
         var userOpt = authService.authenticate(username, password);
         if (userOpt.isEmpty()) {
             redirects.addFlashAttribute("error", "Invalid username or password.");
@@ -47,7 +36,7 @@ public class AuthController {
         session.setAttribute(AuthService.SESSION_ROLE, user.getRole());
         authService.log(user.getUsername(), "LOGIN", "User logged in as " + user.getRole().getDisplayName());
         redirects.addFlashAttribute("success", "Welcome, " + user.getFullName() + "!");
-        return "redirect:" + authService.getPortalPath(user);
+        return "redirect:" + authService.getHomePath(user);
     }
 
     @GetMapping("/logout")

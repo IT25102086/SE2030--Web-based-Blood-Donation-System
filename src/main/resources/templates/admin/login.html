@@ -21,7 +21,7 @@
             <!-- Alerts -->
             <div th:replace="~{layout :: alerts}"></div>
 
-            <form th:action="@{/admin/login}" method="post" style="display: flex; flex-direction: column; gap: 20px;">
+            <form th:action="@{/login}" method="post" style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label for="username" class="form-label">Username</label>
                     <input type="text" id="username" name="username" class="form-control" required placeholder="Enter admin username" autocomplete="username">

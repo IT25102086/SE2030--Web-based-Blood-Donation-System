@@ -27,11 +27,12 @@ public class UserAccount {
 
     private String hospital;
 
+    // Link to donor profile for self-registered donors (nullable, unique)
+    @Column(name = "donor_id", unique = true, length = 36)
+    private String donorId;
+
     @Column(nullable = false)
     private boolean active = true;
-
-    @Column(name = "permissions", columnDefinition = "NVARCHAR(MAX)")
-    private String permissions;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -53,9 +54,9 @@ public class UserAccount {
     public void setRole(UserRole role) { this.role = role; }
     public String getHospital() { return hospital; }
     public void setHospital(String hospital) { this.hospital = hospital; }
+    public String getDonorId() { return donorId; }
+    public void setDonorId(String donorId) { this.donorId = donorId; }
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
-    public String getPermissions() { return permissions; }
-    public void setPermissions(String permissions) { this.permissions = permissions; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

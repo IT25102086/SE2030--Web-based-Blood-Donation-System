@@ -1,55 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head('Manage Messages')}"></head>
+<head th:replace="~{layout :: head('Manage Messages - Admin')}"></head>
 <body>
 
-    <!-- Navbar -->
-    <nav th:replace="~{layout :: navbar('admin')}"></nav>
+    <!-- Header & Navigation -->
+    <header th:replace="~{layout :: navbar('admin')}"></header>
 
-    <!-- Main Container -->
-    <main class="main-wrapper">
-        
-        <!-- Admin Navigation Tab Bar -->
-        <div class="card" style="padding: 16px; margin-bottom: 24px; display: flex; gap: 12px; overflow-x: auto; align-items: center; border-left: 5px solid var(--color-primary);">
-            <a th:href="@{/admin/dashboard}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Dashboard</a>
-            <a th:href="@{/admin/donors}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Manage Donors</a>
-            <a th:href="@{/admin/requests}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Manage Requests</a>
-            <a th:href="@{/admin/inventory}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Inventory & QA</a>
-            <a th:href="@{/admin/deliveries}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px;">Deliveries</a>
-            <a th:href="@{/admin/messages}" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px; display: flex; align-items: center; gap: 6px;">
-                Messages
-            </a>
-            <a th:href="@{/admin/logout}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 10px; margin-left: auto; border-color: rgba(220,38,38,0.3); color: var(--color-primary);">Logout Console</a>
+    <main class="container" style="padding-block: 40px 80px;">
+        <!-- Admin Navigation Bar -->
+        <div class="portal-bar">
+            <span class="portal-title">Admin Console</span>
+            <a th:href="@{/admin/dashboard}" class="btn btn-secondary btn-sm">Dashboard</a>
+            <a th:href="@{/admin/donors}" class="btn btn-secondary btn-sm">Donors</a>
+            <a th:href="@{/admin/requests}" class="btn btn-secondary btn-sm">Requests</a>
+            <a th:href="@{/admin/inventory}" class="btn btn-secondary btn-sm">Inventory &amp; QA</a>
+            <a th:href="@{/admin/deliveries}" class="btn btn-secondary btn-sm">Deliveries</a>
+            <a th:href="@{/admin/messages}" class="btn btn-primary btn-sm">Messages</a>
+            <a th:href="@{/admin/logout}" class="btn btn-secondary btn-sm" style="margin-left: auto; color: var(--crimson); border-color: #fca5a5;">Logout Console</a>
         </div>
 
         <!-- Alerts -->
         <div th:replace="~{layout :: alerts}"></div>
 
-        <!-- Messages List Card -->
-        <section class="card">
+        <!-- Messages Card -->
+        <div class="form-card" style="margin: 0; padding: 28px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <div>
-                    <h2 class="card-title" style="margin-bottom: 4px;">Inquiries & Contact Messages</h2>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Messages submitted by public visitors and donors via the contact page.</p>
+                    <h2 style="font-size: 1.35rem; color: var(--oxford-blue-1); font-weight: 800;">Public Inquiries &amp; Messages</h2>
+                    <p style="color: var(--slate-500); font-size: 0.9rem;">Direct messages submitted via the Contact Us form.</p>
                 </div>
-                <span class="badge" th:text="${messages != null ? messages.size() + ' Total' : '0 Total'}" style="background: var(--bg-secondary); padding: 6px 14px; border-radius: 20px; font-weight: 600;">0 Total</span>
+                <span class="status-badge available" th:text="${#lists.size(messages)} + ' Messages Total'">0 Total</span>
             </div>
 
-            <div th:if="${#lists.isEmpty(messages)}" style="text-align: center; padding: 48px 16px; color: var(--text-secondary);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16" style="margin-bottom: 12px; opacity: 0.5;">
-                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
-                </svg>
-                <p>No contact messages received yet.</p>
+            <div th:if="${#lists.isEmpty(messages)}" style="padding: 40px; text-align: center; color: var(--slate-500);">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="#cbd5e1" style="margin: 0 auto 12px auto;"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <p>No messages received yet.</p>
             </div>
 
             <div th:unless="${#lists.isEmpty(messages)}" class="table-responsive">
-                <table>
+                <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Sender</th>
+                            <th>Sender Details</th>
                             <th>Subject</th>
                             <th>Message</th>
-                            <th>Date Received</th>
+                            <th>Date</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -57,24 +52,26 @@
                     <tbody>
                         <tr th:each="msg : ${messages}">
                             <td>
-                                <strong th:text="${msg.name}">Name</strong>
-                                <br>
-                                <small style="color: var(--text-secondary);" th:text="${msg.email}">email@example.com</small>
-                            </td>
-                            <td style="font-weight: 500;" th:text="${msg.subject != null ? msg.subject : 'General Inquiry'}">Subject</td>
-                            <td style="max-width: 320px; word-break: break-word;" th:text="${msg.message}">Message content goes here...</td>
-                            <td style="white-space: nowrap;" th:text="${msg.createdAt != null ? #temporals.format(msg.createdAt, 'dd MMM yyyy HH:mm') : 'N/A'}">Date</td>
-                            <td>
-                                <span th:if="${msg.status == 'unread'}" class="status-indicator unavailable" style="padding: 4px 8px; border-radius: 6px;">Unread</span>
-                                <span th:unless="${msg.status == 'unread'}" class="status-indicator available" style="padding: 4px 8px; border-radius: 6px;">Read</span>
+                                <strong th:text="${msg.name}">Kasun</strong><br>
+                                <a th:href="'mailto:' + ${msg.email}" style="color: var(--royal-blue); font-size: 0.85rem;" th:text="${msg.email}">email@domain</a>
                             </td>
                             <td>
-                                <div style="display: flex; gap: 8px; align-items: center;">
-                                    <form th:if="${msg.status == 'unread'}" th:action="@{/admin/messages/{id}/read(id=${msg.id})}" method="post" style="margin: 0;">
-                                        <button type="submit" class="btn btn-secondary btn-sm" title="Mark as Read" style="padding: 4px 8px; font-size: 0.8rem;">Mark Read</button>
+                                <strong th:text="${msg.subject}">Blood Camp</strong>
+                            </td>
+                            <td style="max-width: 320px;">
+                                <p style="font-size: 0.88rem; color: var(--slate-700); line-height: 1.5;" th:text="${msg.message}">Message</p>
+                            </td>
+                            <td style="font-size: 0.85rem;" th:text="${#temporals.format(msg.createdAt, 'dd MMM yyyy HH:mm')}">Date</td>
+                            <td>
+                                <span class="status-badge" th:classappend="${msg.status == 'read' ? 'available' : 'unavailable'}" th:text="${msg.status}">read</span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 6px;">
+                                    <form th:if="${msg.status == 'unread'}" th:action="@{/admin/messages/{id}/read(id=${msg.id})}" method="post">
+                                        <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 4px 8px;">Mark Read</button>
                                     </form>
-                                    <form th:action="@{/admin/messages/{id}/delete(id=${msg.id})}" method="post" style="margin: 0;" onsubmit="return confirm('Are you sure you want to delete this message?');">
-                                        <button type="submit" class="btn btn-sm" style="padding: 4px 8px; font-size: 0.8rem; background: transparent; border: 1px solid var(--color-danger, #dc2626); color: var(--color-danger, #dc2626);">Delete</button>
+                                    <form th:action="@{/admin/messages/{id}/delete(id=${msg.id})}" method="post" onsubmit="return confirm('Delete this message?');">
+                                        <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 4px 8px; color: var(--crimson); border-color: #fca5a5;">Delete</button>
                                     </form>
                                 </div>
                             </td>
@@ -82,11 +79,10 @@
                     </tbody>
                 </table>
             </div>
-        </section>
-
+        </div>
     </main>
 
-    <!-- Footer -->
+    <!-- Footer Component -->
     <footer th:replace="~{layout :: footer}"></footer>
 
 </body>

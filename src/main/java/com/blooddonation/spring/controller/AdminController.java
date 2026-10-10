@@ -27,8 +27,8 @@ public class AdminController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
+    public String logout() {
+        // Single invalidate lives in AuthController.logout — just delegate.
         return "redirect:/logout";
     }
 
@@ -80,9 +80,20 @@ public class AdminController {
     }
 
     @PostMapping("/inventory/{id}/screening")
-    public String screening(@PathVariable String id, @RequestParam boolean hiv, @RequestParam boolean hepB, @RequestParam boolean hepC, @RequestParam boolean syphilis, @RequestParam boolean malaria, @RequestParam(required = false) String notes, RedirectAttributes redirects) {
+    public String screening(@PathVariable String id, @RequestParam(required = false, defaultValue = "false") boolean hiv, @RequestParam(required = false, defaultValue = "false") boolean hepB, @RequestParam(required = false, defaultValue = "false") boolean hepC, @RequestParam(required = false, defaultValue = "false") boolean syphilis, @RequestParam(required = false, defaultValue = "false") boolean malaria, @RequestParam(required = false) String notes, RedirectAttributes redirects) {
         try { service.recordScreening(id, hiv, hepB, hepC, syphilis, malaria, notes); redirects.addFlashAttribute("success", "QA screening saved and availability updated."); }
         catch (Exception e) { redirects.addFlashAttribute("error", e.getMessage()); }
+        return "redirect:/admin/inventory";
+    }
+
+    @PostMapping("/inventory/{id}/discard")
+    public String discardUnitAdmin(@PathVariable String id, @RequestParam(required = false) String reason, RedirectAttributes redirects) {
+        try {
+            service.discardBloodUnit(id, reason);
+            redirects.addFlashAttribute("success", "Blood unit decommissioned & marked as Discarded.");
+        } catch (Exception e) {
+            redirects.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/inventory";
     }
 
@@ -150,7 +161,9 @@ public class AdminController {
             }
             donor.setAvailabilitySlots(slots);
             Donor created = service.registerDonor(donor);
-            redirectAttributes.addFlashAttribute("success", "Donor created successfully! ID: " + created.getId());
+            String loginUser = service.getDonorLoginUsername(created.getId());
+            redirectAttributes.addFlashAttribute("success", "Donor created successfully! ID: " + created.getId()
+                    + (loginUser != null ? " | Login: " + loginUser + " / phone number" : ""));
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error creating donor: " + e.getMessage());
         }
@@ -277,6 +290,18 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("success", "Request status updated successfully.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error updating status: " + e.getMessage());
+        }
+        return "redirect:/admin/requests";
+    }
+
+    // Delete Request POST
+    @PostMapping("/requests/{id}/delete")
+    public String deleteRequestAdmin(@PathVariable("id") String id, RedirectAttributes redirectAttributes) {
+        boolean success = service.deleteRequest(id);
+        if (success) {
+            redirectAttributes.addFlashAttribute("success", "Blood request deleted successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Failed to delete blood request.");
         }
         return "redirect:/admin/requests";
     }
