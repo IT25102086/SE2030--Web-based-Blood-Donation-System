@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Staff Login')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar('login')}"></nav>
+<main class="main-wrapper" style="display:flex;align-items:center;justify-content:center;min-height:70vh">
+    <div class="card" style="max-width:480px;width:100%;padding:40px 32px">
+        <div style="text-align:center;margin-bottom:24px">
+            <h2 style="font-size:1.8rem;font-weight:800">BloodConnect Login</h2>
+            <p style="color:var(--text-secondary);font-size:.9rem">Secure role-based access for all stakeholders</p>
+        </div>
+        <div th:replace="~{layout :: alerts}"></div>
+        <form th:action="@{/login}" method="post" style="display:flex;flex-direction:column;gap:16px">
+            <div class="form-group"><label>Username</label><input name="username" required placeholder="e.g. recipient, hospital, qa"></div>
+            <div class="form-group"><label>Password</label><input type="password" name="password" required placeholder="pass123"></div>
+            <button class="btn btn-primary" style="width:100%;padding:14px">Sign In</button>
+        </form>
+        <div style="margin-top:24px;padding:16px;background:var(--bg-secondary);border-radius:10px;font-size:.82rem">
+            <strong>Demo accounts (password: pass123)</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8">
+                <li><code>recipient</code> — Recipient / Patient (UC-06)</li>
+                <li><code>hospital</code> — Hospital Coordinator (UC-09)</li>
+                <li><code>qa</code> — QA Officer (UC-17)</li>
+                <li><code>delivery</code> — Delivery Officer (UC-02)</li>
+                <li><code>manager</code> — Blood Bank Manager (UC-13)</li>
+                <li><code>itadmin</code> — IT Operations (UC-21)</li>
+            </ul>
+        </div>
+        <div style="text-align:center;margin-top:16px"><a th:href="@{/}">← Back to Home</a></div>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body></html>
+Commit at 2026-10-02T12:06:02
+Commit at 2026-10-04T10:54:33
+Commit at 2026-10-02T19:50:38
+Commit at 2026-09-25T04:35:13
+Commit at 2026-10-02T20:26:15
+Commit at 2026-09-30T20:13:06
+Commit at 2026-10-01T05:10:46
+Commit at 2026-09-25T09:40:09
+Commit at 2026-09-29T19:47:07
+Commit at 2026-10-02T01:42:21
+Commit at 2026-10-04T17:18:10
+Commit at 2026-10-02T12:57:37
+Commit at 2026-10-04T07:27:49
+Commit at 2026-10-05T02:28:31
+Commit at 2026-10-04T14:49:49
+Commit at 2026-09-29T21:30:56
+Commit at 2026-09-25T19:55:53
+Commit at 2026-09-27T17:13:43
+Commit at 2026-10-04T09:38:02
+Commit at 2026-10-05T07:36:11
+Commit at 2026-09-28T10:37:31
+Commit at 2026-09-26T03:02:07
+Commit at 2026-09-25T16:11:22
+Commit at 2026-10-02T06:47:43
+Commit at 2026-09-28T00:23:44
+Commit at 2026-09-30T18:59:04
+Commit at 2026-10-03T09:46:50
+Commit at 2026-10-03T10:07:02
+Commit at 2026-10-02T06:07:37
+Commit at 2026-10-01T23:55:20
