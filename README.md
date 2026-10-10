@@ -1,284 +1,100 @@
-# IT25102086 — IT Operations Supervisor
-## BloodConnect Group Project — Role Contribution
+# BloodConnect — Blood Donation Management System
 
-**Student ID:** IT25102086  
-**Assigned Role:** IT Operations Supervisor  
-**Portal URL:** `http://localhost:8089/portal/it`  
-**Demo Login:** username `itadmin` / password `pass123`
+Real-world style blood donation platform (Spring Boot 3 + Thymeleaf + SQL Server):
+donor journey (register → book → donate → history), QA screening, compatible-stock
+reservation, approval, cold-chain dispatch, role portals, audit trail.
 
----
+## Quick start (IntelliJ IDEA)
 
-## Role Overview
+1. Open this folder in IntelliJ → Trust Project (Maven auto-imports)
+2. Project SDK = **Java 17**
+3. SQL Server running with `Blood_Connect` database
+4. Run dropdown → **BloodDonationApplication** → ▶ Run
+5. Open http://localhost:8088
 
-The IT Operations Supervisor is the system administrator with **full access to all portals and all permissions**. This role:
+CLI: `run.bat` (or `mvn spring-boot:run`)
 
-- Creates and manages all user accounts (all 6 roles)
-- Configures role-based default permissions
-- Customizes individual member permissions beyond their role defaults
-- Activates and deactivates user accounts
-- Views comprehensive system audit logs
-- Manages the entire technical infrastructure of the platform
+## Roles & demo logins (password `pass123`)
 
-The IT Admin bypass rule: `if (user.getRole() == UserRole.IT_ADMIN) return user;` — IT admins skip all permission checks and can access every portal and action in the system.
-
----
-
-## My Permissions
-
-| Permission Code | Label | Description |
+| Role | Username | Portal |
 |---|---|---|
-| `MANAGE_USERS` | Manage User Accounts | Create new system accounts, activate or deactivate members |
-| `MANAGE_PERMISSIONS` | Manage Member Permissions | Configure granular access permissions for individuals and roles |
-| `VIEW_AUDIT` | View Activity Audit Logs | Inspect security logs, action histories, and admin events |
-| `CONFIGURE_SYSTEM` | Configure System Settings | Manage system parameters, integrations, and operational policies |
+| Donor | name = username, phone = password | `/portal/donor` |
+| Recipient (staff) | `recipient` | `/portal/recipient` |
+| Hospital Coordinator | `hospital` | `/portal/hospital` |
+| QA Officer | `qa` | `/portal/qa` |
+| Delivery Officer | `delivery` | `/portal/delivery` |
+| Blood Bank Manager | `manager` | `/portal/manager` |
+| IT Admin | `itadmin` | `/portal/it`, `/admin/dashboard` |
 
----
+Per-role details: [`docs/roles/`](docs/roles/) (controller + template + flow per role).
 
-## Backend Files & Methods
+## Blood lifecycle
 
-### PortalController.java
-**Path:** `src/main/java/com/blooddonation/spring/controller/PortalController.java`
+`register → collect → Pending Screening → QA screen → Approved → approve(reserve) → schedule → Delivered`
+120-day donor gap, ABO-compatible matching, FEFO, nightly expiry sweep.
 
-| Method | HTTP | URL | Lines | Description |
-|---|---|---|---|---|
-| `itPortal()` | GET | `/portal/it` | 509 – 514 | Load IT main console — user list + audit logs |
-| `itMembersPortal()` | GET | `/portal/it/members` | 516 – 521 | Load member permission management view |
-| `populateItManagementModel()` | — | — | 523 – 547 | Private: builds the full model for IT views |
-| `updatePermissions()` | POST | `/portal/it/permissions` | 549 – 560 | Update default permissions for an entire role (text field) |
-| `updateRolePermissionsFromBoxes()` | POST | `/portal/it/role-permissions` | 562 – 575 | Update role default permissions via checkbox UI |
-| `updateMemberPermissions()` | POST | `/portal/it/users/{id}/permissions` | 577 – 591 | Set custom permissions for a specific member |
-| `resetMemberPermissions()` | POST | `/portal/it/users/{id}/reset-permissions` | 593 – 603 | Reset member to their role's default permissions |
-| `toggleUserStatus()` | POST | `/portal/it/users/{id}/toggle-status` | 605 – 615 | Activate or deactivate a user account |
-| `deleteUser()` | POST | `/portal/it/users/{id}/delete` | 617 – 628 | Permanently remove a user from the system |
-| `createUser()` | POST | `/portal/it/users` | 630 – 646 | Create new user account with role and optional permissions |
+## Photography
 
-### AuthController.java — Full Ownership
-**Path:** `src/main/java/com/blooddonation/spring/controller/AuthController.java`
+Public-facing pages use real clinical/community photography instead of illustrations.
+Images live in `src/main/resources/static/images/photos/` (served at `/images/photos/*.jpg`),
+sourced from **Pexels** (free for commercial use, no attribution required, no watermarks).
 
-| Method | HTTP | URL | Description |
-|---|---|---|---|
-| `loginPage()` | GET | `/login` | Render staff login page |
-| `login()` | POST | `/login` | Authenticate user + redirect to their portal |
-| `logout()` | GET | `/logout` | Invalidate session, redirect to login |
-
-### AdminController.java — Full Ownership
-**Path:** `src/main/java/com/blooddonation/spring/controller/AdminController.java`
-
-Full admin panel: dashboard, donor management, inventory, QA screening, requests, deliveries, contact messages.
-
-### WebController.java — Full Ownership
-**Path:** `src/main/java/com/blooddonation/spring/controller/WebController.java`
-
-All public-facing routes: home (`/`), `/availability`, `/search`, `/register`, `/donor/{id}`, `/requests`, `/contact`.
-
-### AuthService.java — Full Ownership
-**Path:** `src/main/java/com/blooddonation/spring/service/AuthService.java`
-
-The complete authentication and authorization engine. Key responsibilities:
-
-| Section | Description |
-|---|---|
-| `DEFAULT_PERMISSIONS` map | Defines default permission strings for all 6 roles |
-| `PORTAL_PERMISSIONS` map | Defines which permissions grant access to each portal |
-| `PORTAL_LABELS` map | Human-readable portal names |
-| `seedUsersAndPermissions()` | Creates initial PermissionConfig rows + 6 demo user accounts |
-| `authenticate()` | BCrypt password verification |
-| `getRolePermissions()` | Loads role permissions from DB or defaults |
-| `getUserPermissions()` | Gets effective permissions (custom or role default) |
-| `hasPermission()` | Single permission check with IT_ADMIN bypass |
-| `hasPortalAccess()` | Checks if user can access a portal |
-| `getAccessiblePortals()` | Lists all accessible portals for nav rendering |
-| `updatePermissions()` | Update role-level default permissions |
-| `updateRolePermissions()` | Update role permissions from checkbox list |
-| `updateUserPermissions()` | Set custom permissions for a specific member |
-| `resetUserPermissions()` | Clear custom permissions → fall back to role defaults |
-| `toggleUserActive()` | Enable/disable a user account |
-| `createUser()` | Create new user with optional custom permissions |
-| `deleteUser()` | Permanently delete a user account |
-| `log()` | Write an audit log entry |
-| `getRecentAuditLogs()` | Retrieve last 50 audit events |
-| `getPortalPath()` | Determine redirect path after login |
-
-### Config Files — Full Ownership
-
-| File | Path | Purpose |
+| File | Subject | Used on |
 |---|---|---|
-| `AdminInterceptor.java` | `src/main/java/com/blooddonation/spring/config/AdminInterceptor.java` | Protects `/admin/**` routes |
-| `PortalAuthInterceptor.java` | `src/main/java/com/blooddonation/spring/config/PortalAuthInterceptor.java` | Protects `/portal/**` routes |
-| `PortalExceptionHandler.java` | `src/main/java/com/blooddonation/spring/config/PortalExceptionHandler.java` | Handles RuntimeException in portal (access denied, etc.) |
-| `WebConfig.java` | `src/main/java/com/blooddonation/spring/config/WebConfig.java` | Registers interceptors, configures MVC |
+| `hero-donation.jpg` | Donor giving blood on a donation bed | Home hero, OG image, search hero |
+| `donor-thumbs-up.jpg` | Smiling donor after donating | Hero overlay, donor profile |
+| `nurse-donor.jpg` | Nurse drawing blood from donor | Home hero overlay, login split |
+| `donor-arm-bags.jpg` | Donor arm + collection bag | About, donation process |
+| `health-check.jpg` | Blood-pressure check | Process step 1, eligibility page |
+| `lab-screening.jpg` | Centrifuge / lab screening | Process step 3 |
+| `hospital-care.jpg` | Nurse caring for a patient | Process step 4, requests board |
+| `nurse-patient.jpg` | Nurse with patient in a ward | Requests board banner |
+| `donation-clinic.jpg` | Donors on clinic beds | Home CTA |
+| `donor-event.jpg` | Outdoor donation drive | Search hero, register, about |
+| `blood-drive-closeup.jpg` | Donor at a medical-centre drive | Find-donor band, profile hero |
+| `campaign-community.jpg` | Community drive | Why-donate card |
+| `campaign-outdoor.jpg` | Outdoor campaign setup | Campaigns card |
+| `campaign-indoor.jpg` | Indoor charity drive | Campaigns card, register hero |
+| `blood-bags.jpg` / `blood-bags-labels.jpg` | Blood bags in storage | Stock hero, cold-chain banner |
+| `blood-sample-tube.jpg` | Blood sample for screening | Why-donate card |
+| `medical-team.jpg` | Medical team | About hero, about strip |
+| `volunteers.jpg` | Healthcare worker + volunteers | Contact hero, about strip |
+| `collection-monitor.jpg` | Collection monitor | Reserved for QA views |
 
-### Models — Full Ownership
+Styling classes live at the end of `static/css/style.css`: `.photo`, `.hero-media`,
+`.hero-photo--*`, `.photo-card`, `.process-grid`, `.banner-photo`, `.photo-strip`,
+`.card-photo-head`, `.login-split`. Bump the `style.css?v=` query in `layout.html`
+when the stylesheet changes (static assets are cached for 365 days).
 
-| File | Path | Description |
+## Codebase map (role-wise)
+
+- `controller/portal/` — **one controller per role, split from the old
+  `PortalController` monolith** (`Recipient/Hospital/Qa/Delivery/Manager/
+  ItPortalController`, each owned by its student) + shared
+  `BasePortalController` (auth guards) + `DonorPortalController`
+  (donor self-service, shared); all `/portal/*` routes unchanged
+- `templates/portal/*.html` — one template per role, each loading only its own
+  `static/js/portal-<role>.js` + `static/css/portal-<role>.css`
+- `controller/WebController.java` — public site, `AdminController.java` — legacy admin
+- `service/` — business rules, `model/` + `repository/` — JPA entities
+
+## Team collaboration (6 students)
+
+Ownership matrix: [`docs/ROLES_OWNERSHIP.md`](docs/ROLES_OWNERSHIP.md) ·
+workspace guides: [`roles/`](roles/) · reviewers: [`CODEOWNERS`](CODEOWNERS).
+
+| Student ID | Role | Branch |
 |---|---|---|
-| `AppPermission.java` | `src/main/java/com/blooddonation/spring/model/AppPermission.java` | All 22 permission definitions grouped by category |
-| `UserRole.java` | `src/main/java/com/blooddonation/spring/model/UserRole.java` | All 6 user roles with display names |
-| `UserAccount.java` | `src/main/java/com/blooddonation/spring/model/UserAccount.java` | User entity (id, username, passwordHash, role, hospital, permissions, active) |
-| `PermissionConfig.java` | `src/main/java/com/blooddonation/spring/model/PermissionConfig.java` | Role-level permission config stored in DB |
-| `AuditLog.java` | `src/main/java/com/blooddonation/spring/model/AuditLog.java` | Audit log entity (username, action, details, timestamp) |
-
-### Repositories — Full Ownership
-
-| File | Path |
-|---|---|
-| `UserAccountRepository.java` | `src/main/java/com/blooddonation/spring/repository/UserAccountRepository.java` |
-| `PermissionConfigRepository.java` | `src/main/java/com/blooddonation/spring/repository/PermissionConfigRepository.java` |
-| `AuditLogRepository.java` | `src/main/java/com/blooddonation/spring/repository/AuditLogRepository.java` |
-
-### Infrastructure Files — Full Ownership
-
-| File | Purpose |
-|---|---|
-| `BloodDonationApplication.java` | Spring Boot main entry point — loads native SQL Server DLL |
-| `pom.xml` | Maven build config — Java 17, Spring Boot 3.2.5, SQL Server JDBC, BCrypt |
-| `src/main/resources/application.properties` | Server port, datasource URL, JPA settings, Thymeleaf config |
-| `run.bat` | Windows startup helper — finds JDK/Maven and launches the app |
-
----
-
-## Frontend Files
-
-| File | Path | Purpose |
-|---|---|---|
-| `it.html` | `src/main/resources/templates/portal/it.html` | IT main console — create users, view audit logs |
-| `it-members.html` | `src/main/resources/templates/portal/it-members.html` | Member permission management — role defaults + per-member customization |
-| `_nav.html` | `src/main/resources/templates/portal/_nav.html` | Shared portal navigation sidebar fragment |
-| `login.html` | `src/main/resources/templates/login.html` | Staff login page |
-| `layout.html` | `src/main/resources/templates/layout.html` | Shared base Thymeleaf layout |
-| `error.html` | `src/main/resources/templates/error.html` | Global error page |
-| `index.html` | `src/main/resources/templates/index.html` | Public home dashboard |
-| `contact.html` | `src/main/resources/templates/contact.html` | Public contact form |
-| `search.html` | `src/main/resources/templates/search.html` | Public donor search |
-| `donor-profile.html` | `src/main/resources/templates/donor-profile.html` | Public donor profile |
-| `register.html` | `src/main/resources/templates/register.html` | Public donor registration |
-| `admin/login.html` | `src/main/resources/templates/admin/login.html` | Admin login page |
-| `admin/dashboard.html` | `src/main/resources/templates/admin/dashboard.html` | Admin system dashboard |
-| `admin/donors.html` | `src/main/resources/templates/admin/donors.html` | Admin donor management |
-| `admin/donor-edit.html` | `src/main/resources/templates/admin/donor-edit.html` | Admin donor edit form |
-| `admin/messages.html` | `src/main/resources/templates/admin/messages.html` | Admin contact message inbox |
-| `admin/requests.html` | `src/main/resources/templates/admin/requests.html` | Admin request management |
-| `static/css/style.css` | `src/main/resources/static/css/style.css` | Global stylesheet |
-| `static/js/app.js` | `src/main/resources/static/js/app.js` | Global JavaScript |
-
----
-
-## Key Use Cases
-
-| Use Case | Action | Portal |
-|---|---|---|
-| UC-21 | Create user accounts for team members | POST `/portal/it/users` |
-| PBI-21 | Manage role-level permissions | POST `/portal/it/role-permissions` |
-| — | Customize individual member permissions | POST `/portal/it/users/{id}/permissions` |
-| — | Reset member to role defaults | POST `/portal/it/users/{id}/reset-permissions` |
-| — | Enable/disable user accounts | POST `/portal/it/users/{id}/toggle-status` |
-| — | View system audit log | GET `/portal/it` |
-
----
-
-## Permission System Architecture
-
-```text
-Role Default Permissions (PermissionConfig table)
-  └── e.g., RECIPIENT → "VIEW_AVAILABILITY,SUBMIT_REQUEST,TRACK_REQUEST"
-
-Member Override Permissions (UserAccount.permissions field)
-  └── If set: overrides role defaults entirely
-  └── If blank/null: falls back to role defaults
-
-IT Admin Portal (/portal/it/members)
-  ├── Update role defaults (applies to all members of that role)
-  ├── Grant custom permissions to specific members
-  └── Reset member to role defaults
-```
-
----
-
-## Seeded Demo Accounts (all use password: `pass123`)
-
-| Username | Role | Full Name |
-|---|---|---|
-| `recipient` | Recipient / Patient | Weerasuriya M.W.K.C.P. |
-| `hospital` | Hospital Coordinator | Piumal K.P.N. |
-| `qa` | QA Officer | Rubasinghe S.S. |
-| `delivery` | Delivery Officer | Jayasekara G.H.D.T.K. |
-| `manager` | Blood Bank Manager | Widanapathirana S.K.N. |
-| `itadmin` | IT Operations Supervisor | Wilabada W.K.S.M. |
-
----
-
-## Notes
-- IT_ADMIN has a hard-coded bypass in `requireRole()`, `requirePermission()`, `requirePortalAccess()`, and `hasPermission()` — they always pass
-- Audit log writes happen for every significant action across all portals via `authService.log()`
-- BCrypt (strength 10) is used for all password hashing — never stored in plaintext
-- `spring.jpa.hibernate.ddl-auto=update` means Hibernate auto-creates/updates all tables on startup
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+| IT25102090 | Recipient / Patient | `feature/IT25102090-recipient-patient` |
+| IT25102084 | Hospital Coordinator | `feature/IT25102084-hospital-coordinator` |
+| IT25102085 | Quality Assurance Officer | `feature/IT25102085-quality-assurance` |
+| IT25102081 | Delivery Coordination Officer | `feature/IT25102081-delivery-coordination` |
+| IT25102082 | Blood Bank Manager | `feature/IT25102082-blood-bank-manager` |
+| IT25102086 | IT Operations Supervisor | `feature/IT25102086-it-operations-supervisor` |
+
+Work only in your owned files; keep shared files (`BasePortalController.java`,
+`BloodDonationService.java`, `AuthService.java`, `layout.html`, `app.js`,
+`style.css`, `pom.xml`, `application.properties`) untouched unless unavoidable.
+Each branch touches disjoint files, so merging all six PRs into `main` is a
+plain `git merge` — no manual file copying — and the merged app runs as one
+complete system (`mvn spring-boot:run` or `run.bat`).
