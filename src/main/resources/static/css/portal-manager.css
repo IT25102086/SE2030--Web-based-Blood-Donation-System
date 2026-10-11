@@ -1,0 +1,6 @@
+/* portal-manager.css — owned by IT25102082 (Blood Bank Manager).
+   Loaded only by templates/portal/manager.html.
+   Put manager-specific styling here. Shared styles stay in css/style.css. */
+.portal-manager-scope .form-card {
+    scroll-margin-top: 90px;
+}
