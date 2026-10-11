@@ -1,0 +1,6 @@
+/* portal-qa.css — owned by IT25102085 (Quality Assurance Officer).
+   Loaded only by templates/portal/qa.html.
+   Put QA-specific styling here. Shared styles stay in css/style.css. */
+.portal-qa-scope .form-card {
+    scroll-margin-top: 90px;
+}
