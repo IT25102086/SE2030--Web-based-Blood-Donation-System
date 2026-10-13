@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" width="520" height="400" fill="none">
+  <defs>
+    <linearGradient id="ctaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fef2f2"/>
+    </linearGradient>
+    <linearGradient id="heartRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f87171"/>
+      <stop offset="50%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#991b1b"/>
+    </linearGradient>
+    <filter id="ctaShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#b91c1c" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <rect x="30" y="30" width="460" height="340" rx="32" fill="url(#ctaBg)"/>
+  <circle cx="260" cy="180" r="140" fill="#ffffff" opacity="0.6"/>
+  
+  <!-- Big Warm Heart in Hand Graphic -->
+  <g transform="translate(180, 70)" filter="url(#ctaShadow)">
+    <!-- Supporting Hand Vector -->
+    <path d="M-40 210 C-10 180 30 180 60 170 C90 160 120 180 160 210 H-40 Z" fill="#fdba74" opacity="0.9"/>
+    <!-- Giant Glowing Red Heart with Blood Drop -->
+    <path d="M80 180 C80 180 -10 100 -10 35 C-10 -15 45 -15 80 25 C115 -15 170 -15 170 35 C170 100 80 180 80 180 Z" fill="url(#heartRed)"/>
+    <!-- Central blood drop icon inside heart -->
+    <path d="M80 50 C80 50 62 75 62 90 C62 101 70 110 80 110 C90 110 98 101 98 90 C98 75 80 50 80 50 Z" fill="#ffffff" opacity="0.95"/>
+    <path d="M78 82 H82 V90 H90 V94 H82 V102 H78 V94 H70 V90 H78 Z" fill="#dc2626"/>
+  </g>
+
+  <!-- Sparkles -->
+  <g fill="#f59e0b">
+    <path d="M110 90 L114 100 L124 104 L114 108 L110 118 L106 108 L96 104 L106 100 Z"/>
+    <path d="M410 130 L413 138 L421 141 L413 144 L410 152 L407 144 L399 141 L407 138 Z"/>
+    <path d="M130 270 L133 277 L140 280 L133 283 L130 290 L127 283 L120 280 L127 277 Z"/>
+  </g>
+
+  <rect x="70" y="300" width="380" height="46" rx="12" fill="#ffffff" stroke="#fecaca" stroke-width="1.5"/>
+  <text x="260" y="328" font-family="'Poppins', sans-serif" font-size="14" font-weight="700" fill="#0e254e" text-anchor="middle">Every Donor is a Lifesaver</text>
+</svg>

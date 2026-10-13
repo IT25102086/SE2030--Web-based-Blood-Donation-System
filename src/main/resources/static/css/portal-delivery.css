@@ -1,0 +1,6 @@
+/* portal-delivery.css — owned by IT25102081 (Delivery Coordination Officer).
+   Loaded only by templates/portal/delivery.html.
+   Put delivery-specific styling here. Shared styles stay in css/style.css. */
+.portal-delivery-scope .form-card {
+    scroll-margin-top: 90px;
+}
