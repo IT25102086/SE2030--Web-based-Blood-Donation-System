@@ -1,0 +1,6 @@
+/* portal-recipient.css — owned by IT25102090 (Recipient / Patient).
+   Loaded only by templates/portal/recipient.html.
+   Put recipient-specific styling here. Shared styles stay in css/style.css. */
+.portal-recipient-scope .form-card {
+    scroll-margin-top: 90px;
+}

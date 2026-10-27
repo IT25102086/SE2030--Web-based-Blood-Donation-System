@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Blood Availability')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar('availability')}"></nav>
+<main class="main-wrapper">
+    <section class="hero" style="padding: 42px 0 26px;"><h1>Live Blood Availability</h1><p>Only QA-approved, unexpired units are displayed.</p></section>
+    <div class="card">
+        <form method="get" th:action="@{/availability}" style="display:flex;gap:12px;align-items:end;flex-wrap:wrap">
+            <div class="form-group" style="margin:0"><label for="bloodGroup">Blood group</label><select id="bloodGroup" name="bloodGroup"><option value="">All groups</option><option th:each="g : ${ {'A+','A-','B+','B-','AB+','AB-','O+','O-'} }" th:value="${g}" th:selected="${g == bloodGroup}" th:text="${g}"></option></select></div>
+            <button class="btn btn-primary" type="submit">Check availability</button>
+        </form>
+    </div>
+    <div class="card" th:if="${#lists.isEmpty(units)}"><p>No approved units currently match this search. Please submit an urgent request if needed.</p><a class="btn btn-primary" th:href="@{/requests}">Request Blood</a></div>
+    <div class="card" th:unless="${#lists.isEmpty(units)}"><h2 class="card-title">Available units</h2><div class="table-responsive"><table><thead><tr><th>Blood Group</th><th>Component</th><th>Branch</th><th>Expires</th><th>Status</th></tr></thead><tbody><tr th:each="unit : ${units}"><td><span class="blood-badge" th:text="${unit.bloodGroup}"></span></td><td th:text="${unit.component}"></td><td th:text="${unit.branch}"></td><td th:text="${#temporals.format(unit.expiresAt, 'dd MMM yyyy')}"></td><td><span class="status-indicator available">Available</span></td></tr></tbody></table></div></div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body></html>

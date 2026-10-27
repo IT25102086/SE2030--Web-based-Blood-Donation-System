@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 460" width="520" height="460" fill="none">
+  <defs>
+    <linearGradient id="abBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#fee2e2"/>
+    </linearGradient>
+    <linearGradient id="abRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+    <filter id="abShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0e254e" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <rect x="40" y="40" width="440" height="380" rx="30" fill="url(#abBg)"/>
+  <circle cx="120" cy="110" r="40" fill="#ffffff" opacity="0.6"/>
+  <circle cx="410" cy="350" r="50" fill="#fee2e2" opacity="0.8"/>
+
+  <!-- Hospital Center building vector -->
+  <g transform="translate(130, 90)" filter="url(#abShadow)">
+    <!-- Base Hospital Building -->
+    <rect x="30" y="50" width="200" height="230" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+    <!-- Medical Cross Sign on Roof -->
+    <rect x="105" y="10" width="50" height="40" rx="8" fill="#dc2626"/>
+    <path d="M125 18 H135 V26 H143 V34 H135 V42 H125 V34 H117 V26 H125 Z" fill="#ffffff"/>
+    
+    <!-- Building Windows Grid -->
+    <g fill="#e0f2fe">
+      <rect x="52" y="70" width="28" height="28" rx="4"/>
+      <rect x="94" y="70" width="28" height="28" rx="4"/>
+      <rect x="136" y="70" width="28" height="28" rx="4"/>
+      <rect x="178" y="70" width="28" height="28" rx="4"/>
+
+      <rect x="52" y="115" width="28" height="28" rx="4"/>
+      <rect x="94" y="115" width="28" height="28" rx="4"/>
+      <rect x="136" y="115" width="28" height="28" rx="4"/>
+      <rect x="178" y="115" width="28" height="28" rx="4"/>
+
+      <rect x="52" y="160" width="28" height="28" rx="4"/>
+      <rect x="94" y="160" width="28" height="28" rx="4"/>
+      <rect x="136" y="160" width="28" height="28" rx="4"/>
+      <rect x="178" y="160" width="28" height="28" rx="4"/>
+    </g>
+
+    <!-- Glass Entrance Doors -->
+    <rect x="100" y="215" width="60" height="65" rx="6" fill="#0284c7"/>
+    <rect x="104" y="220" width="24" height="60" rx="3" fill="#bae6fd" opacity="0.8"/>
+    <rect x="132" y="220" width="24" height="60" rx="3" fill="#bae6fd" opacity="0.8"/>
+
+    <!-- Red Ambulance Vehicle -->
+    <g transform="translate(160, 190)" filter="url(#abShadow)">
+      <path d="M0 45 H120 V15 C120 15 110 0 95 0 H20 C10 0 0 10 0 20 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+      <rect x="10" y="22" width="100" height="8" fill="#dc2626"/>
+      <!-- Cross on ambulance -->
+      <rect x="42" y="8" width="16" height="12" fill="#dc2626"/>
+      <!-- Wheels -->
+      <circle cx="28" cy="50" r="14" fill="#1e293b"/>
+      <circle cx="28" cy="50" r="6" fill="#94a3b8"/>
+      <circle cx="92" cy="50" r="14" fill="#1e293b"/>
+      <circle cx="92" cy="50" r="6" fill="#94a3b8"/>
+      <!-- Emergency siren -->
+      <ellipse cx="60" cy="-2" rx="7" ry="4" fill="#ef4444"/>
+    </g>
+  </g>
+
+  <!-- Community Hearts Banner -->
+  <g transform="translate(80, 310)" filter="url(#abShadow)">
+    <rect x="0" y="0" width="160" height="64" rx="16" fill="#ffffff" stroke="#fecaca" stroke-width="2"/>
+    <circle cx="34" cy="32" r="18" fill="#fee2e2"/>
+    <path d="M34 40 L26 32 C22 28 22 22 27 20 C31 18 33 21 34 23 C35 21 37 18 41 20 C46 22 46 28 42 32 Z" fill="#dc2626"/>
+    <text x="60" y="28" font-family="'Poppins', sans-serif" font-size="13" font-weight="700" fill="#0f172a">Saving Lives</text>
+    <text x="60" y="44" font-family="'Roboto', sans-serif" font-size="11" font-weight="500" fill="#64748b">Together across SL</text>
+  </g>
+</svg>
