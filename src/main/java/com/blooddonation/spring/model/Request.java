@@ -5,12 +5,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "requests", indexes = {
-    @Index(name = "idx_req_status", columnList = "status"),
-    @Index(name = "idx_req_blood_group", columnList = "blood_group"),
-    @Index(name = "idx_req_needed", columnList = "needed_by"),
-    @Index(name = "idx_req_city", columnList = "city")
-})
 public class Request {
 
     @Id
@@ -32,6 +26,7 @@ public class Request {
 
     @Column(name = "request_type", length = 20)
     private String requestType = "Patient Request";
+
 
     private String city;
 
@@ -81,6 +76,7 @@ public class Request {
     public void setUrgency(String urgency) { this.urgency = urgency; }
     public String getRequestType() { return requestType; }
     public void setRequestType(String requestType) { this.requestType = requestType; }
+
     public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }
     public String getHospital() { return hospital; }

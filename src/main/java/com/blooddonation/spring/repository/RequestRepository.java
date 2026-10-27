@@ -13,12 +13,3 @@ public interface RequestRepository extends JpaRepository<Request, String> {
 
     List<Request> findByBloodGroup(String bloodGroup);
 
-    // Real-world: counts + filtered queries without loading full table
-    long countByStatus(String status);
-
-    long countByStatusNotIn(java.util.Collection<String> statuses);
-
-    List<Request> findByStatusNotInOrderByNeededByAsc(java.util.Collection<String> statuses);
-
-    List<Request> findTop3ByStatusOrderByNeededByAsc(String status);
-}
