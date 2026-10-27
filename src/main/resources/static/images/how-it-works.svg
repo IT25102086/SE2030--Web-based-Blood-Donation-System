@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" width="1200" height="260" fill="none" role="img" aria-label="How blood donation works in three steps">
+  <defs>
+    <linearGradient id="hwRose" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f43f5e"/><stop offset="1" stop-color="#be123c"/></linearGradient>
+    <linearGradient id="hwBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
+    <linearGradient id="hwGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#15803d"/></linearGradient>
+  </defs>
+  <line x1="200" y1="118" x2="1000" y2="118" stroke="#e2e8f0" stroke-width="3" stroke-dasharray="10 10"/>
+  <g font-family="'Plus Jakarta Sans','Inter',sans-serif">
+    <g transform="translate(60,40)">
+      <rect width="320" height="180" rx="22" fill="#fff" stroke="#fecdd3" stroke-width="1.5"/>
+      <circle cx="44" cy="52" r="30" fill="url(#hwRose)"/>
+      <path d="M36 52l6 6 12-12" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="276" cy="52" r="20" fill="#fff1f2"/><text x="276" y="61" text-anchor="middle" font-size="20" font-weight="800" fill="#e11d48">1</text>
+      <text x="32" y="118" font-size="22" font-weight="800" fill="#0f172a">Register in 2 min</text>
+      <text x="32" y="146" font-size="15" font-weight="500" fill="#64748b">Sign up as a donor with your</text>
+      <text x="32" y="168" font-size="15" font-weight="500" fill="#64748b">blood group + city.</text>
+    </g>
+    <g transform="translate(440,40)">
+      <rect width="320" height="180" rx="22" fill="#fff" stroke="#bae6fd" stroke-width="1.5"/>
+      <circle cx="44" cy="52" r="30" fill="url(#hwBlue)"/>
+      <circle cx="44" cy="52" r="11" fill="none" stroke="#fff" stroke-width="4"/><circle cx="44" cy="52" r="3.5" fill="#fff"/>
+      <circle cx="276" cy="52" r="20" fill="#e0f2fe"/><text x="276" y="61" text-anchor="middle" font-size="20" font-weight="800" fill="#0284c7">2</text>
+      <text x="32" y="118" font-size="22" font-weight="800" fill="#0f172a">Get matched</text>
+      <text x="32" y="146" font-size="15" font-weight="500" fill="#64748b">Hospitals + patients find you</text>
+      <text x="32" y="168" font-size="15" font-weight="500" fill="#64748b">when your type is needed.</text>
+    </g>
+    <g transform="translate(820,40)">
+      <rect width="320" height="180" rx="22" fill="#fff" stroke="#bbf7d0" stroke-width="1.5"/>
+      <circle cx="44" cy="52" r="30" fill="url(#hwGreen)"/>
+      <path d="M44 62l-9-9c-3.5-3.5-3.5-8 0-10.5 2-1.5 4-1 5 1 1-2 3-2.5 5-1 3.5 2.5 3.5 7 0 10.5z" fill="#fff"/>
+      <circle cx="276" cy="52" r="20" fill="#dcfce7"/><text x="276" y="61" text-anchor="middle" font-size="20" font-weight="800" fill="#15803d">3</text>
+      <text x="32" y="118" font-size="22" font-weight="800" fill="#0f172a">Donate + save 3 lives</text>
+      <text x="32" y="146" font-size="15" font-weight="500" fill="#64748b">One bag helps up to three</text>
+      <text x="32" y="168" font-size="15" font-weight="500" fill="#64748b">patients. Track it live.</text>
+    </g>
+  </g>
+</svg>

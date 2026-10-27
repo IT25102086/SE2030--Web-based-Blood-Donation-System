@@ -1,0 +1,6 @@
+/* portal-it.css — owned by IT25102086 (IT Operations Supervisor).
+   Loaded only by templates/portal/it.html.
+   Put IT-specific styling here. Shared styles stay in css/style.css. */
+.portal-it-scope .form-card {
+    scroll-margin-top: 90px;
+}
