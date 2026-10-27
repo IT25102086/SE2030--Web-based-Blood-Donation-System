@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "requests")
 public class Request {
 
     @Id
@@ -28,8 +27,6 @@ public class Request {
     @Column(name = "request_type", length = 20)
     private String requestType = "Patient Request";
 
-    @Column(name = "requester_username", length = 100)
-    private String requesterUsername;
 
     private String city;
 
@@ -79,8 +76,7 @@ public class Request {
     public void setUrgency(String urgency) { this.urgency = urgency; }
     public String getRequestType() { return requestType; }
     public void setRequestType(String requestType) { this.requestType = requestType; }
-    public String getRequesterUsername() { return requesterUsername; }
-    public void setRequesterUsername(String requesterUsername) { this.requesterUsername = requesterUsername; }
+
     public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }
     public String getHospital() { return hospital; }

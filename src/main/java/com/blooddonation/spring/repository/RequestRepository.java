@@ -12,4 +12,4 @@ public interface RequestRepository extends JpaRepository<Request, String> {
     List<Request> findByStatus(String status);
 
     List<Request> findByBloodGroup(String bloodGroup);
-}
+
